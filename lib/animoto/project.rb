@@ -1,5 +1,5 @@
 module Animoto
-  class Project
+  class Project < Animoto::Resource
     
   end
 end
