@@ -11,6 +11,8 @@ require here + '/rendering_job'
 
 module Animoto
   class Client
+    API_ENDPOINT  = "http://api.animoto.com/"
+    API_VERSION   = 2
     
   end
 end
