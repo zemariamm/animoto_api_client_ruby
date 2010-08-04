@@ -1,5 +1,5 @@
 module Animoto
-  class Manifest
+  class Project
     
   end
 end
