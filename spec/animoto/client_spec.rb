@@ -24,7 +24,7 @@ describe Animoto::Client do
       end
     end
     
-    describe "autmatically" do
+    describe "automatically" do
       before do
         @home_path  = File.expand_path("~/.animotorc")
         @etc_path   = "/etc/.animotorc"
