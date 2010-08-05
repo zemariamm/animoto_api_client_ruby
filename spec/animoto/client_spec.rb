@@ -71,108 +71,25 @@ describe Animoto::Client do
     end
   end
   
-  describe "making a request" do
-    describe "building the request URL" do
-      
-    end
-    
-    describe "setting the Content-Type header" do
-      
-    end
-    
-    describe "building the request body" do
-      
-    end
-    
-    describe "using the correct HTTP verb" do
-      
-    end
-  end
-  
   describe "finding an instance by identifier" do
     before do
       @storyboard = Animoto::Storyboard.new
-      @id = 1
+      @url = "https://api.animoto.com/storyboards/1"
     end
     
-    it "should make a GET request" do
-      client.expects(:request).with(:get, anything)
-      client.find(Animoto::Storyboard, @id)
-    end
-    
-    it "should request the endpoint affixed with the identifier" do
-      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}/#{@id}"
-      client.expects(:request).with(anything, url)
-      client.find(Animoto::Storyboard, @id)
-    end
-    
-    it "should ask for the correct content-type" do
-      content_type = "#{Animoto::Client::BASE_CONTENT_TYPE}.#{Animoto::Storyboard.content_type}+json"
-      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
-      client.find(Animoto::Storyboard, @id)
-    end
-    
-    it "should not sent a request body" do
-      client.expects(:request).with(anything, anything, Not(has_entry(:body => regexp_matches(/^.+$/))))
-      client.find(Animoto::Storyboard, @id)
-    end
-  end
-  
-  describe "creating an instance" do
-    before do
-      @storyboard = Animoto::Storyboard.new
-    end
-    
-    it "should make a POST request" do
-      client.expects(:request).with(:post, anything, anything)
-      client.create(@storyboard)
-    end
-    
-    it "should request the endpoint" do
-      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}"
-      client.expects(:request).with(anything, url, anything)
-      client.create(@storyboard)
+    it "should make a GET request to the given url" do
+      client.find(Animoto::Storyboard, @url)
+      WebMock.should have_requested(:get, @url)
     end
     
     it "should ask for a response in the proper format" do
-      content_type = "application/json"
-      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
-      client.create(@storyboard)
+      client.find(Animoto::Storyboard, @url)
+      WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+json"})
     end
     
-    it "should send the request body" do
-      client.expects(:request).with(anything, anything, has_entry(:body => @storyboard.to_request_body))
-      client.create(@storyboard)
+    it "should not sent a request body" do
+      client.find(Animoto::Storyboard, @url)
+      WebMock.should have_requested(:get, @url).with(:body => "")
     end
-  end
-  
-  describe "destroying an instance" do
-    before do
-      @storyboard = Animoto::Storyboard.new
-      @id = 1
-      @storyboard.instance_variable_set :@id, @id
-    end
-    
-    it "should make a DELETE request" do
-      client.expects(:request).with(:delete, anything, anything)
-      client.destroy(@storyboard)
-    end
-    
-    it "should request the endpoint affixed with the identifier" do
-      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}"
-      client.expects(:request).with(anything, url, anything)
-      client.destroy(@storyboard)
-    end
-    
-    it "should ask for the correct response format" do
-      content_type = "application/json"
-      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
-      client.destroy(@storyboard)
-    end
-    
-    it "should not send a request body" do
-      client.expects(:request).with(anything, anything, Not(has_entry(:body => regexp_matches(/^.+$/))))
-      client.destroy(@storyboard)
-    end
-  end
+  end  
 end
