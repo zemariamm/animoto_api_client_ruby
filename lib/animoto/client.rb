@@ -1,3 +1,6 @@
+require 'net/http'
+require 'json'
+
 $:.unshift File.dirname(__FILE__)
 require 'resource'
 require 'asset'
