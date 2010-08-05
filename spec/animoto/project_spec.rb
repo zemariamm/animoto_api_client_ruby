@@ -6,9 +6,4 @@ describe Animoto::Project do
     @project ||= Animoto::Project.new options
   end
   
-  describe "directing" do
-    it "should create a new DirectingJob" do
-      project.direct!.should be_an_instance_of(Animoto::DirectingJob)
-    end
-  end
 end

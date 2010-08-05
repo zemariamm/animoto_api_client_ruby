@@ -5,9 +5,4 @@ describe Animoto::Storyboard do
     @storyboard ||= Animoto::Storyboard.new options
   end
   
-  describe "rendering" do
-    it "should create a new RenderingJob" do
-      storyboard.render!.should be_an_instance_of(Animoto::RenderingJob)
-    end
-  end
 end
