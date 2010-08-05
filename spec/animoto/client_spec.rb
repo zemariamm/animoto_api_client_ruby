@@ -71,64 +71,14 @@ describe Animoto::Client do
     end
   end
 
-  describe "setting the HTTP engine" do
-    it "should default to 'net/http'" do
-      client.http_engine.name.should == :net_http
-    end
-    
-    describe "on initialization" do
-      it "should accept an :http_engine parameter with the symbolic name of an engine to use" do
-        client(:http_engine => :curl)
-        client.http_engine.name.should == :curl
-      end
-
-      it "should accept an :http_engine parameter with an object to use" do
-        client(:http_engine => object)
-        client.http_engine.should == object
-      end
-    end
-    
-    it "should accept the symbolic name of an engine to use" do
-      client.http_engine = :curl
-      client.http_engine.name.should == :curl
-    end
-    
-    it "should accept an object to use" do
-      client.http_engine = object
-      client.http_engine.should == object
-    end
+  it "should default to a json response format" do
+    client.response_format.should == :json
   end
   
-  describe "setting the response parser" do
-    it "should default to 'json'" do
-      client.response_parser.name.should == :json
+  describe "setting a response format" do
+    it "should raise an error if the format isn't supported" do
+      lambda { client.response_format = :yaml }.should raise_error
     end
-    
-    describe "on initialization" do
-      it "should accept an :response_parser parameter with the symbolic name of an parser to use" do
-        client(:response_parser => :nokogiri)
-        client.response_parser.name.should == :nokogiri
-      end
-
-      it "should accept an :response_parser parameter with an object to use" do
-        client(:response_parser => object)
-        client.response_parser.should == object
-      end
-    end
-    
-    it "should accept the symbolic name of an parser to use" do
-      client.response_parser = :nokogiri
-      client.response_parser.name.should == :nokogiri
-    end
-    
-    it "should accept an object to use" do
-      client.response_parser = object
-      client.response_parser.should == object
-    end    
-  end
-  
-  describe "deciding which format (JSON or XML) to request" do
-    
   end
   
   describe "making a request" do
@@ -149,42 +99,90 @@ describe Animoto::Client do
     end
   end
   
-  describe "creating resources" do
-    it "should return an instance of the named resource" do
-      client.resource(:storyboard).should be_an_instance_of(Animoto::Storyboard)
+  describe "finding an instance by identifier" do
+    before do
+      @storyboard = Animoto::Storyboard.new
+      @id = 1
     end
     
-    it "should delegate any given options of the resource initialization" do
-      options = { :hooray_for => :everything! }
-      Animoto::Storyboard.expects(:new).with(anything, options)
-      client.resource(:storyboard, options)
+    it "should make a GET request" do
+      client.expects(:request).with(:get, anything)
+      client.find(Animoto::Storyboard, @id)
     end
     
-    it "should yield the new instance to a given block" do
-      Animoto::Storyboard.expects(:new).returns(storyboard = stub('storyboard!'))
-      storyboard.expects(:hooray!)
-      client.returns(:storyboard) { |s| s.hooray! }
+    it "should request the endpoint affixed with the identifier" do
+      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}/#{@id}"
+      client.expects(:request).with(anything, url)
+      client.find(Animoto::Storyboard, @id)
+    end
+    
+    it "should ask for the correct content-type" do
+      content_type = "#{Animoto::Client::BASE_CONTENT_TYPE}.#{Animoto::Storyboard.content_type}+#{client.response_format}"
+      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
+      client.find(Animoto::Storyboard, @id)
+    end
+    
+    it "should not sent a request body" do
+      client.expects(:request).with(anything, anything, Not(has_entry(:body => regexp_matches(/^.+$/))))
+      client.find(Animoto::Storyboard, @id)
     end
   end
   
-  describe "#method_missing" do
-    describe "when the method name corresponds to a resource" do
-      before do
-        # little sanity check here
-        client.should_not respond_to(:storyboard)
-      end
-      
-      it "should call #resource with the named resource" do
-        client.expects(:resource).with(:storyboard)
-        client.storyboard
-      end
-      
-      it "should delegate any parameters to the #resource call" do
-        options = { :hooray_for => :everything! }
-        client.expects(:resource).with(:storyboard, options)
-        client.storyboard(options)
-      end
+  describe "creating an instance" do
+    before do
+      @storyboard = Animoto::Storyboard.new
+    end
+    
+    it "should make a POST request" do
+      client.expects(:request).with(:post, anything, anything)
+      client.create(@storyboard)
+    end
+    
+    it "should request the endpoint" do
+      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}"
+      client.expects(:request).with(anything, url, anything)
+      client.create(@storyboard)
+    end
+    
+    it "should ask for a response in the proper format" do
+      content_type = "application/#{client.response_format}"
+      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
+      client.create(@storyboard)
+    end
+    
+    it "should send the request body" do
+      client.expects(:request).with(anything, anything, has_entry(:body => @storyboard.to_request_body))
+      client.create(@storyboard)
     end
   end
-
+  
+  describe "destroying an instance" do
+    before do
+      @storyboard = Animoto::Storyboard.new
+      @id = 1
+      @storyboard.instance_variable_set :@id, @id
+    end
+    
+    it "should make a DELETE request" do
+      client.expects(:request).with(:delete, anything, anything)
+      client.destroy(@storyboard)
+    end
+    
+    it "should request the endpoint affixed with the identifier" do
+      url = "#{Animoto::Client::API_ENDPOINT}#{Animoto::Storyboard.endpoint}"
+      client.expects(:request).with(anything, url, anything)
+      client.destroy(@storyboard)
+    end
+    
+    it "should ask for the correct response format" do
+      content_type = "application/#{client.response_format}"
+      client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
+      client.destroy(@storyboard)
+    end
+    
+    it "should not send a request body" do
+      client.expects(:request).with(anything, anything, Not(has_entry(:body => regexp_matches(/^.+$/))))
+      client.destroy(@storyboard)
+    end
+  end
 end
