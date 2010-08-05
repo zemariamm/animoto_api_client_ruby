@@ -19,13 +19,8 @@ module Animoto
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     
     attr_accessor :username, :password
-    attr_reader   :response_format
     
     def initialize *args
-      
-    end
-    
-    def response_format= format
       
     end
     

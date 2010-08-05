@@ -70,16 +70,6 @@ describe Animoto::Client do
       end
     end
   end
-
-  it "should default to a json response format" do
-    client.response_format.should == :json
-  end
-  
-  describe "setting a response format" do
-    it "should raise an error if the format isn't supported" do
-      lambda { client.response_format = :yaml }.should raise_error
-    end
-  end
   
   describe "making a request" do
     describe "building the request URL" do
@@ -117,7 +107,7 @@ describe Animoto::Client do
     end
     
     it "should ask for the correct content-type" do
-      content_type = "#{Animoto::Client::BASE_CONTENT_TYPE}.#{Animoto::Storyboard.content_type}+#{client.response_format}"
+      content_type = "#{Animoto::Client::BASE_CONTENT_TYPE}.#{Animoto::Storyboard.content_type}+json"
       client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
       client.find(Animoto::Storyboard, @id)
     end
@@ -145,7 +135,7 @@ describe Animoto::Client do
     end
     
     it "should ask for a response in the proper format" do
-      content_type = "application/#{client.response_format}"
+      content_type = "application/json"
       client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
       client.create(@storyboard)
     end
@@ -175,7 +165,7 @@ describe Animoto::Client do
     end
     
     it "should ask for the correct response format" do
-      content_type = "application/#{client.response_format}"
+      content_type = "application/json"
       client.expects(:request).with(anything, anything, has_entry(:accept => content_type))
       client.destroy(@storyboard)
     end
