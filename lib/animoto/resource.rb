@@ -19,8 +19,8 @@ module Animoto
       self.class.content_type
     end
     
-    def self.load body, headers
-      
+    def self.load payload
+      new
     end
     
     def initialize *args

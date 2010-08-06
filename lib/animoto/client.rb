@@ -84,7 +84,7 @@ module Animoto
     end
     
     def check_status response
-      raise(response.message) unless (200..299).include?(response.code)
+      raise(response.message) unless (200..299).include?(response.code.to_i)
     end
     
     def parse_response response

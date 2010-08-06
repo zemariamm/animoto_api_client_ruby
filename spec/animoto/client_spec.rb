@@ -73,8 +73,8 @@ describe Animoto::Client do
   
   describe "finding an instance by identifier" do
     before do
-      @storyboard = Animoto::Storyboard.new
       @url = "https://api.animoto.com/storyboards/1"
+      stub_request(:get, @url).to_return(:body => "{}", :status => [200,"OK"])
     end
     
     it "should make a GET request to the given url" do
@@ -91,5 +91,9 @@ describe Animoto::Client do
       client.find(Animoto::Storyboard, @url)
       WebMock.should have_requested(:get, @url).with(:body => "")
     end
+    
+    it "should return an instance of the correct resource type" do
+      client.find(Animoto::Storyboard, @url).should be_an_instance_of(Animoto::Storyboard)
+    end    
   end  
 end
