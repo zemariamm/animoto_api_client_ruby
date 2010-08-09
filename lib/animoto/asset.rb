@@ -7,5 +7,9 @@ module Animoto
       @source_url = source_url
     end
     
+    def to_hash
+      { 'source_url' => @source_url }
+    end
+    
   end
 end
