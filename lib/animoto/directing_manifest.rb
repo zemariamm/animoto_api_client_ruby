@@ -1,5 +1,5 @@
 module Animoto
-  class DirectingManifest
+  class DirectingManifest < Animoto::Manifest
 
     attr_accessor :title, :producer, :pacing, :http_callback_url, :http_callback_format
     attr_reader   :visuals, :song, :style
@@ -72,10 +72,6 @@ module Animoto
       end
       manifest['song'] = song.to_hash if song
       hash
-    end
-    
-    def to_json options = {}
-      self.to_hash(options).to_json
     end
     
   end

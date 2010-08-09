@@ -1,5 +1,5 @@
 module Animoto
-  class RenderingManifest
+  class RenderingManifest < Animoto::Manifest
     
     attr_accessor :storyboard, :resolution, :framerate, :format,
       :http_callback_url, :http_callback_format
@@ -28,10 +28,6 @@ module Animoto
       profile['framerate'] = framerate
       profile['format'] = format
       hash
-    end
-    
-    def to_json
-      self.to_hash.to_json
-    end
+    end    
   end
 end
