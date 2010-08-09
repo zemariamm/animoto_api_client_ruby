@@ -2,9 +2,11 @@ require 'uri'
 require 'net/http'
 require 'net/https'
 require 'json'
+require 'yaml'
 
 $:.unshift File.dirname(__FILE__)
 require 'errors'
+require 'content_type'
 require 'resource'
 require 'asset'
 require 'visual'
@@ -12,6 +14,7 @@ require 'footage'
 require 'image'
 require 'song'
 require 'title_card'
+require 'manifest'
 require 'directing_manifest'
 require 'rendering_manifest'
 require 'directing_and_rendering_manifest'
@@ -82,11 +85,11 @@ module Animoto
     private
     
     def find_request klass, url, options = {}
-      request(:get, URI.parse(url).request_uri, nil, { "Accept" => content_type_of(klass) }, options)
+      request(:get, URI.parse(url).path, nil, { "Accept" => content_type_of(klass) }, options)
     end
     
     def send_manifest manifest, url, options = {}
-      request(:post, URI.parse(url).request_uri, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
+      request(:post, URI.parse(url).path, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
     end
     
     def request method, uri, body, headers = {}, options = {}
