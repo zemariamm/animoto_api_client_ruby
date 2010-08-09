@@ -1,8 +1,8 @@
 module Animoto
   class Song < Animoto::Asset
     
-    def manifest
-      
+    def to_hash
+      {}
     end
     
   end

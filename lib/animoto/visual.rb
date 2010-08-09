@@ -1,7 +1,7 @@
 module Animoto
   module Visual
     
-    def manifest
+    def to_hash
       {}
     end
     
