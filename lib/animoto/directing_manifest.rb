@@ -54,13 +54,14 @@ module Animoto
     end
 
     def to_hash options = {}
-      job = { 'directing_job' => { 'directing_manifest' => {} } }
+      hash = { 'directing_job' => { 'directing_manifest' => {} } }
+      job  = hash['directing_job']
       if http_callback_url
         raise ArgumentError if http_callback_format.nil?
-        job['directing_job']['http_callback'] = http_callback_url
-        job['directing_job']['http_callback_format'] = http_callback_format
+        job['http_callback'] = http_callback_url
+        job['http_callback_format'] = http_callback_format
       end
-      manifest = job['directing_job']['directing_manifest']
+      manifest = job['directing_manifest']
       manifest['style'] = style
       manifest['pacing'] = pacing if pacing
       manifest['title'] = title if title
@@ -70,7 +71,7 @@ module Animoto
         manifest['visuals'] << visual.to_hash
       end
       manifest['song'] = song.to_hash if song
-      job
+      hash
     end
     
     def to_json options = {}
