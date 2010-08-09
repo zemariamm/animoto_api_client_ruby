@@ -39,7 +39,6 @@ module Animoto
     
     def self.unpack_standard_envelope body
       {
-        :http_status_code => body['response']['status']['code'],
         :url => body['payload'][payload_key]['links']['self'],
         :errors => body['response']['status']['errors'] || []
       }
@@ -49,6 +48,10 @@ module Animoto
     def initialize *args
       
     end
-
+    
+    def update body = {}
+      self
+    end
+    
   end
 end

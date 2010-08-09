@@ -57,54 +57,42 @@ module Animoto
       @http.use_ssl = true
     end
     
-    def find klass, url
-      klass.load(build_find_request(klass, url))
+    def find klass, url, options = {}
+      klass.load(find_request(klass, url, options))
     end
     
     def direct! manifest, options = {}
-      DirectingJob.load(build_direct_request(manifest, options))
+      DirectingJob.load(send_manifest(manifest, DirectingJob.endpoint, options))
     end
     
     def render! manifest, options = {}
-      RenderingJob.load(build_render_request(manifest, options))
+      RenderingJob.load(send_manifest(manifest, RenderingJob.endpoint, options))
     end
     
     def direct_and_render! manifest, options = {}
-      DirectingAndRenderingJob.load(build_direct_and_render_request(manifest, options))
+      DirectingAndRenderingJob.load(send_manifest(manifest, DirectingAndRenderingJob.endpoint, options))
     end
     
-    def update_state! job, options = {}
-      job.update(find(job.class, job.url))
+    def reload resource, options = {}
+      resource.reload(find_request(resource.class, resource.url, options))
     end
     
     private
     
-    def build_find_request klass, url
-      request(:get, URI.parse(url).request_uri, nil, "Accept" => content_type_of(klass))
+    def find_request klass, url, options = {}
+      request(:get, URI.parse(url).request_uri, nil, { "Accept" => content_type_of(klass) }, options)
     end
     
-    def build_direct_request manifest, options = {}
-      send_manifest manifest, DirectingJob.endpoint
+    def send_manifest manifest, url, options = {}
+      request(:post, URI.parse(url).request_uri, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
     end
     
-    def build_render_request manifest, options = {}
-      send_manifest manifest, RenderingJob.endpoint
-    end
-    
-    def build_direct_and_render_request manifest, options = {}
-      send_manifest manifest, DirectingAndRenderingJob.endpoint
-    end
-    
-    def send_manifest manifest, url
-      request(:post, url, manifest.to_json, "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest))
-    end
-    
-    def request method, uri, body, headers = {}
-      req = build_request method, uri, body, headers
+    def request method, uri, body, headers = {}, options = {}
+      req = build_request method, uri, body, headers, options
       read_response @http.request(req)
     end
     
-    def build_request method, uri, body, headers
+    def build_request method, uri, body, headers, options
       req = HTTP_METHOD_MAP[method].new uri
       req.body = body
       req.initialize_http_header headers

@@ -22,11 +22,7 @@ describe Animoto::Job do
       @job = Animoto::Job.load @body
     end
     
-    it "should set its status from the status code given" do
-      @job.http_status_code.should == 200
-    end
-    
-    it "should set its status from the job state given" do
+    it "should set its state from the job state given" do
       @job.state.should == 'initial'
     end
     

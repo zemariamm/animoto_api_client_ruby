@@ -98,5 +98,18 @@ describe Animoto::Client do
     end    
   end
   
-  
+  describe "reloading an instance" do
+    before do
+      @url = 'https://api.animoto.com/jobs/directing/1'
+      @job = Animoto::DirectingJob.new :state => 'initial', :url => @url
+      @body = {'response'=>{'status'=>{'code'=>200}},'payload'=>{'directing_job'=>{'state'=>'retrieving_assets','links'=>{'self'=>@url}}}}
+      stub_request(:get, @url).to_return(:body => @body.to_json, :status => [200,"OK"])
+      @job.state.should == 'initial' # sanity check
+    end
+    
+    it "should update the resource's attributes" do
+      client.reload(@job)
+      @job.state.should == 'retrieving_assets'
+    end
+  end
 end

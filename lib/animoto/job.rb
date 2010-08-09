@@ -1,17 +1,16 @@
 module Animoto
   class Job < Animoto::Resource
     
-    def self.unpack_standard_envelope payload
-      super.merge(:state => payload['payload'][payload_key]['state'])
+    def self.unpack_standard_envelope body
+      super.merge(:state => body['payload'][payload_key]['state'])
     end
         
-    attr_reader :url, :state, :errors, :http_status_code
+    attr_reader :url, :state, :errors
     
     def initialize options = {}
-      @http_status_code = options[:http_status_code]
       @state = options[:state]
       @url = options[:url]
-      @errors = options[:errors].collect { |e| wrap_error(e) }      
+      @errors = (options[:errors] || []).collect { |e| wrap_error(e) }
     end
     
     def failed?
@@ -24,6 +23,12 @@ module Animoto
     
     def pending?
       !failed? && !completed?
+    end
+
+    def reload body = {}
+      @state  = body['payload'][payload_key]['state']
+      @errors = (body['response']['status']['errors'] || []).collect { |e| wrap_error(e) }
+      self
     end
     
     private
