@@ -16,12 +16,12 @@ Animoto API Client
 	manifest << Song.new("http://website.com/song.mp3", :artist => "Fishy Joe")
 
 	directing_job = client.direct!(manifest)
-	sleep(30) while directing_job.pending?
+	sleep(30) while client.pending?(directing_job)
 
 	if storyboard = directing_job.storyboard
 		manifest = RenderingManifest.new storyboard, :resolution => "720p"
 		rendering_job = client.render!(manifest)
-		sleep(30) while rendering_job.pending?
+		sleep(30) while client.pending?(rendering_job)
 
 		if video = rendering_job.video
 			puts video.url
