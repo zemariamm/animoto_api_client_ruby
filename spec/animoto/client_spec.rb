@@ -74,7 +74,8 @@ describe Animoto::Client do
   describe "finding an instance by identifier" do
     before do
       @url = "https://api.animoto.com/storyboards/1"
-      stub_request(:get, @url).to_return(:body => "{}", :status => [200,"OK"])
+      @body = {'response'=>{'status'=>{'code'=>200}},'payload'=>{'storyboard'=>{'links'=>{'self'=>@url}}}}
+      stub_request(:get, @url).to_return(:body => @body.to_json, :status => [200,"OK"])
     end
     
     it "should make a GET request to the given url" do
@@ -95,5 +96,7 @@ describe Animoto::Client do
     it "should return an instance of the correct resource type" do
       client.find(Animoto::Storyboard, @url).should be_an_instance_of(Animoto::Storyboard)
     end    
-  end  
+  end
+  
+  
 end

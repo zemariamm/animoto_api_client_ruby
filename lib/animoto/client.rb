@@ -1,6 +1,6 @@
 require 'uri'
 require 'net/http'
-require 'yaml'
+require 'json'
 
 $:.unshift File.dirname(__FILE__)
 require 'errors'
@@ -58,28 +58,46 @@ module Animoto
     end
     
     def find klass, url
-      klass.load(request(:get, URI.parse(url).request_uri, nil, "Accept" => content_type_of(klass)))
+      klass.load(build_find_request(klass, url))
     end
     
     def direct! manifest, options = {}
-      DirectingJob.load(request(:post, DirectingJob.endpoint, manifest.to_json,
-        "Accept" => "application/#{format}", "Content-Type" => content_type_of(project)))
+      DirectingJob.load(build_direct_request(manifest, options))
     end
     
     def render! manifest, options = {}
-      RenderingJob.load(request(:post, RenderingJob.endpoint, manifest.to_json,
-        "Accept" => "application/#{format}", "Content-Type" => content_type_of(storyboard)))
+      RenderingJob.load(build_render_request(manifest, options))
     end
     
-    def update_status! job, options = {}
-      
+    def direct_and_render! manifest, options = {}
+      DirectingAndRenderingJob.load(build_direct_and_render_request(manifest, options))
     end
     
-    def pending? job, options = {}
-      
+    def update_state! job, options = {}
+      job.update(find(job.class, job.url))
     end
     
     private
+    
+    def build_find_request klass, url
+      request(:get, URI.parse(url).request_uri, nil, "Accept" => content_type_of(klass))
+    end
+    
+    def build_direct_request manifest, options = {}
+      send_manifest manifest, DirectingJob.endpoint
+    end
+    
+    def build_render_request manifest, options = {}
+      send_manifest manifest, RenderingJob.endpoint
+    end
+    
+    def build_direct_and_render_request manifest, options = {}
+      send_manifest manifest, DirectingAndRenderingJob.endpoint
+    end
+    
+    def send_manifest manifest, url
+      request(:post, url, manifest.to_json, "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest))
+    end
     
     def request method, uri, body, headers = {}
       req = build_request method, uri, body, headers
@@ -103,7 +121,7 @@ module Animoto
     end
     
     def parse_response response
-      YAML.load(response.body)
+      JSON.parse(response.body)
     end
     
     def content_type_of klass_or_instance
