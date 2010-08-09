@@ -5,5 +5,9 @@ module Animoto
 
     attr_reader :url
     
+    def initialize options = {}
+      @url = options[:url]
+    end
+    
   end
 end
