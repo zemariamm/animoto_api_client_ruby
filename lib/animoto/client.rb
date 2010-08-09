@@ -10,7 +10,8 @@ require 'footage'
 require 'image'
 require 'song'
 require 'title_card'
-require 'project'
+require 'directing_manifest'
+require 'rendering_manifest'
 require 'storyboard'
 require 'video'
 require 'job'
@@ -59,13 +60,13 @@ module Animoto
       klass.load(request(:get, URI.parse(url).request_uri, nil, "Accept" => content_type_of(klass)))
     end
     
-    def direct! project, options = {}
-      DirectingJob.load(request(:post, DirectingJob.endpoint, project.manifest(options),
+    def direct! manifest, options = {}
+      DirectingJob.load(request(:post, DirectingJob.endpoint, manifest.to_json,
         "Accept" => "application/#{format}", "Content-Type" => content_type_of(project)))
     end
     
-    def render! storyboard, options = {}
-      RenderingJob.load(request(:post, RenderingJob.endpoint, storyboard.manifest(options),
+    def render! manifest, options = {}
+      RenderingJob.load(request(:post, RenderingJob.endpoint, manifest.to_json,
         "Accept" => "application/#{format}", "Content-Type" => content_type_of(storyboard)))
     end
     
