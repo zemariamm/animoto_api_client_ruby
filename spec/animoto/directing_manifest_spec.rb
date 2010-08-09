@@ -2,11 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Animoto::DirectingManifest do
 
-  def manifest *args
-    @manifest ||= begin
-      options = args.last.is_a?(Hash) ? args.pop : {}
-      Animoto::DirectingManifest.new(options)
-    end
+  def manifest options = {}
+    @manifest ||= Animoto::DirectingManifest.new(options)
   end
   
   describe "initializing" do

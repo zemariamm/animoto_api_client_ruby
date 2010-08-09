@@ -1,5 +1,5 @@
 module Animoto
-  class DirectingManifest < Animoto::Resource
+  class DirectingManifest
 
     attr_accessor :title, :producer, :pacing, :http_callback_url, :http_callback_format
     attr_reader   :visuals, :song, :style
