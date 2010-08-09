@@ -24,10 +24,28 @@ module Animoto
       self.class.content_type
     end
     
-    def self.load payload
-      new
+    def self.payload_key key = nil
+      @payload_key = key if key
+      @payload_key || infer_content_type
     end
     
+    def payload_key
+      self.class.payload_key
+    end
+    
+    def self.load body
+      new(unpack_standard_envelope(body))
+    end
+    
+    def self.unpack_standard_envelope body
+      {
+        :http_status_code => body['response']['status']['code'],
+        :url => body['payload'][payload_key]['links']['self'],
+        :errors => body['response']['status']['errors'] || []
+      }
+    end
+    private_class_method :unpack_standard_envelope
+
     def initialize *args
       
     end

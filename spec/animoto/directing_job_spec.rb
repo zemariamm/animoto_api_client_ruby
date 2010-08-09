@@ -10,6 +10,10 @@ describe Animoto::DirectingJob do
     Animoto::DirectingJob.content_type.should == 'directing_job'
   end
   
+  it "should have payload key 'directing_job'" do
+    Animoto::DirectingJob.payload_key.should == 'directing_job'
+  end
+  
   describe "loading from a response body" do
     before do
       @body = {
@@ -28,7 +32,7 @@ describe Animoto::DirectingJob do
           }
         }
       }
-      @job = Animoto::DirectingJob.new @body
+      @job = Animoto::DirectingJob.load @body
     end
     
     it "should set the storyboard url from the body" do

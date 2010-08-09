@@ -1,22 +1,17 @@
 module Animoto
   class Job < Animoto::Resource
     
-    def self.payload_key key = nil
-      @payload_key = key if key
-      @payload_key || infer_content_type
+    def self.unpack_standard_envelope payload
+      super.merge(:state => payload['payload'][payload_key]['state'])
     end
-    
-    def payload_key
-      self.class.payload_key
-    end
-    
+        
     attr_reader :url, :state, :errors, :http_status_code
     
-    def initialize body = {}
-      @errors = (body['response']['status']['errors'] || []).collect { |error| wrap_error(error) }
-      @http_status_code = body['response']['status']['code']
-      @state  = body['payload'][payload_key]['state']
-      @url    = body['payload'][payload_key]['links']['self']
+    def initialize options = {}
+      @http_status_code = options[:http_status_code]
+      @state = options[:state]
+      @url = options[:url]
+      @errors = options[:errors].collect { |e| wrap_error(e) }      
     end
     
     def failed?

@@ -28,7 +28,7 @@ describe Animoto::DirectingAndRenderingJob do
           }
         }
       }
-      @job = Animoto::DirectingAndRenderingJob.new @body
+      @job = Animoto::DirectingAndRenderingJob.load @body
     end
     
     it "should set the video url from the body" do

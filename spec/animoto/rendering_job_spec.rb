@@ -33,7 +33,7 @@ describe Animoto::RenderingJob do
           }
         }
       }
-      @job = Animoto::RenderingJob.new @body
+      @job = Animoto::RenderingJob.load @body
     end
     
     it "should set the storyboard url from the body" do

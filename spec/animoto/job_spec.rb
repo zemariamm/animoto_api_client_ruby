@@ -19,7 +19,7 @@ describe Animoto::Job do
           }
         }
       }
-      @job = Animoto::Job.new @body
+      @job = Animoto::Job.load @body
     end
     
     it "should set its status from the status code given" do
@@ -58,7 +58,7 @@ describe Animoto::Job do
           }
         }
       }
-      @job = Animoto::Job.new @body
+      @job = Animoto::Job.load @body
     end
     
     it "should have 'failed' state" do
@@ -76,7 +76,7 @@ describe Animoto::Job do
   
   describe "returning state" do
     before do
-      @job = Animoto::Job.new 'response'=>{'status'=>{'code'=>200}},'payload'=>{'job'=>{'state'=>'initial','links'=>{'self'=>'http://animoto.com/jobs/1'}}}
+      @job = Animoto::Job.load 'response'=>{'status'=>{'code'=>200}},'payload'=>{'job'=>{'state'=>'initial','links'=>{'self'=>'http://animoto.com/jobs/1'}}}
     end
     
     describe "when 'initial'" do
