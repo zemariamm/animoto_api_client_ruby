@@ -3,6 +3,7 @@ require 'net/http'
 require 'yaml'
 
 $:.unshift File.dirname(__FILE__)
+require 'errors'
 require 'resource'
 require 'asset'
 require 'visual'
@@ -68,6 +69,14 @@ module Animoto
     def render! manifest, options = {}
       RenderingJob.load(request(:post, RenderingJob.endpoint, manifest.to_json,
         "Accept" => "application/#{format}", "Content-Type" => content_type_of(storyboard)))
+    end
+    
+    def update_status! job, options = {}
+      
+    end
+    
+    def pending? job, options = {}
+      
     end
     
     private
