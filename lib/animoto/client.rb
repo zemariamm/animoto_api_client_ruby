@@ -1,5 +1,6 @@
 require 'uri'
 require 'net/http'
+require 'net/https'
 require 'json'
 
 $:.unshift File.dirname(__FILE__)
