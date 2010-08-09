@@ -27,7 +27,7 @@ require 'rendering_job'
 
 module Animoto
   class Client
-    API_ENDPOINT      = "https://api.animoto.com"
+    API_ENDPOINT      = "http://api2-staging.animoto.com/"
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     HTTP_METHOD_MAP   = {
