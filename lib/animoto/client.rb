@@ -101,6 +101,7 @@ module Animoto
       req = HTTP_METHOD_MAP[method].new uri
       req.body = body
       req.initialize_http_header headers
+      req.basic_auth username, password
       req
     end
     
