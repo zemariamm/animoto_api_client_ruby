@@ -19,7 +19,7 @@ module Animoto
       !failed? && !completed?
     end
 
-    def load attributes = {}
+    def instantiate attributes = {}
       @state  = attributes[:state]
       super
     end
