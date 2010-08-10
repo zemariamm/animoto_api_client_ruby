@@ -15,8 +15,41 @@ describe Animoto::Resource do
     end
   end
 
-  describe "loading an instance from a response hash" do
+  describe "identity mapping" do
+    before do
+      @url = "https://api.animoto.com/videos/1"
+      @video = Animoto::Video.new :url => @url
+      @body = {
+        'response' => {
+          'status' => { 'code' => 200 },
+          'payload' => {
+            'video' => {
+              'links' => {
+                'download' => "http://animoto.com/videos/1",
+                'storyboard' => "https://api.animoto.com/storyboards/1",
+                'self' => @url
+              },
+              'metadata' => {
+                'duration' => 300,
+                'format' => 'h264',
+                'framerate' => 30,
+                'vertical_resolution' => "720p"
+              }
+            }
+          }
+        }
+      }
+    end
     
+    it "should ensure that two instances instantiated with the same unique identifier will both be the same object" do
+      @video.should equal(Animoto::Video.load(@body))
+    end
+    
+    it "should update the original instance with the initialization parameters of the new one" do
+      @video.duration.should be_nil
+      video = Animoto::Video.load(@body)
+      video.duration.should == 300
+      @video.duration.should == 300
+    end
   end
-    
 end
