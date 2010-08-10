@@ -1,7 +1,7 @@
 Animoto API Client
 ==================
 
-## Pseudocode Workflow
+## Workflow
 
 	require 'animoto/client'
 	include Animoto
@@ -10,7 +10,7 @@ Animoto API Client
 
 	manifest = DirectingManifest.new(:title => "Amazing Title!", :producer => "Fishy Joe")
 	manifest << Image.new("http://website.com/picture.png")
-	manifest << Image.new("http://website.com/hooray.png", :spotlight => true)
+	manifest << Image.new("http://website.com/hooray.png", :spotlit => true)
 	manifest << TitleCard.new("Woohoo!", "Hooray for everything!")
 	manifest << Footage.new("http://website.com/movie.mp4", :duration => 3.5)
 	manifest << Song.new("http://website.com/song.mp3", :artist => "Fishy Joe")
