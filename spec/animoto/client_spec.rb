@@ -108,7 +108,7 @@ describe Animoto::Client do
     end
     
     it "should update the resource's attributes" do
-      client.reload(@job)
+      client.reload!(@job)
       @job.state.should == 'retrieving_assets'
     end
   end

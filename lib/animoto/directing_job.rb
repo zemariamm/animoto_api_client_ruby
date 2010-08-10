@@ -8,12 +8,11 @@ module Animoto
     end
     
     attr_reader :storyboard, :storyboard_url
-    
-    def initialize options = {}
-      super
-      @storyboard_url = options[:storyboard_url]
+
+    def load attributes = {}
+      @storyboard_url = attributes[:storyboard_url]
       @storyboard = Animoto::Storyboard.new(:url => @storyboard_url) if @storyboard_url
+      super
     end
-    
   end
 end

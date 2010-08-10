@@ -12,12 +12,12 @@ module Animoto
     
     attr_reader :storyboard, :storyboard_url, :video, :video_url
     
-    def initialize options = {}
-      super
-      @storyboard_url = options[:storyboard_url]
+    def load attributes = {}
+      @storyboard_url = attributes[:storyboard_url]
       @storyboard = Animoto::Storyboard.new(:url => @storyboard_url) if @storyboard_url
-      @video_url = options[:video_url]
+      @video_url = attributes[:video_url]
       @video = Animoto::Video.new(:url => @video_url) if @video_url
+      super
     end
         
   end

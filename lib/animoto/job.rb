@@ -7,12 +7,6 @@ module Animoto
         
     attr_reader :url, :state, :errors
     
-    def initialize options = {}
-      @state = options[:state]
-      @url = options[:url]
-      @errors = (options[:errors] || []).collect { |e| wrap_error(e) }
-    end
-    
     def failed?
       @state == 'failed'
     end
@@ -25,16 +19,10 @@ module Animoto
       !failed? && !completed?
     end
 
-    def reload body = {}
-      @state  = body['response']['payload'][payload_key]['state']
-      @errors = (body['response']['status']['errors'] || []).collect { |e| wrap_error(e) }
-      self
+    def load attributes = {}
+      @state  = attributes[:state]
+      super
     end
     
-    private
-    
-    def wrap_error error
-      Animoto::Error.new error['message']
-    end
   end
 end

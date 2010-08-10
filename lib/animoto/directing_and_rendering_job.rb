@@ -9,10 +9,10 @@ module Animoto
     
     attr_reader :video, :video_url
     
-    def initialize options = {}
-      super
-      @video_url = options[:video_url]
+    def load attributes = {}
+      @video_url = attributes[:video_url]
       @video = Animoto::Video.new(:url => @video_url) if @video_url
+      super
     end
     
   end

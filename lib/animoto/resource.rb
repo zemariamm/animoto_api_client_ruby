@@ -21,7 +21,7 @@ module Animoto
     end
     
     def self.load body
-      new(unpack_standard_envelope(body))
+      new.load(unpack_standard_envelope(body))
     end
     
     def self.unpack_standard_envelope body
@@ -32,13 +32,26 @@ module Animoto
     end
     private_class_method :unpack_standard_envelope
 
-    def initialize *args
-      
+    attr_reader :url, :errors
+
+    def initialize attributes = {}
+      load attributes
     end
     
     def update body = {}
       self
     end
     
+    def load attributes = {}
+      @url    = attributes[:url]
+      @errors = (attributes[:errors] || []).collect { |e| wrap_error e  }
+      self
+    end
+    
+    private 
+    
+    def wrap_error error
+      Animoto::Error.new error['message']
+    end
   end
 end
