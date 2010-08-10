@@ -18,7 +18,7 @@ Animoto API Client
 	directing_job = client.direct!(manifest)
 	while directing_job.pending?
 		sleep(30)
-		client.update_state!(directing_job)
+		client.reload!(directing_job)
 	end
 
 	if storyboard = directing_job.storyboard
@@ -26,7 +26,7 @@ Animoto API Client
 		rendering_job = client.render!(manifest)
 		while rendering_job.pending?
 			sleep(30)
-			client.update_state!(rendering_job)
+			client.reload!(rendering_job)
 		end
 
 		if video = rendering_job.video
