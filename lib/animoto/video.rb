@@ -1,11 +1,28 @@
 module Animoto
   class Video < Animoto::Resource
     
-    attr_reader :url
-    
-    def initialize options = {}
-      @url = options[:url]
+    def self.unpack_standard_envelope body
+      super.merge({
+        :download_url => body['response']['payload'][payload_key]['links']['download'],
+        :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
+        :duration => body['response']['payload'][payload_key]['metadata']['duration'],
+        :format   => body['response']['payload'][payload_key]['metadata']['format'],
+        :framerate  => body['response']['payload'][payload_key]['metadata']['framerate'],
+        :resolution => body['response']['payload'][payload_key]['metadata']['vertical_resolution']
+      })
     end
-    
+
+    attr_reader :download_url, :storyboard_url, :duration, :format, :framerate, :resolution
+
+    def instantiate attributes = {}
+      @download_url = attributes[:download_url]
+      @storyboard_url = attributes[:storyboard_url]
+      @duration = attributes[:duration]
+      @format = attributes[:format]
+      @framerate = attributes[:framerate]
+      @resolution = attributes[:resolution]
+      super
+    end
+
   end
 end
