@@ -35,14 +35,14 @@ module Animoto
       :post => Net::HTTP::Post
     }
     
-    attr_accessor :username, :password
+    attr_accessor :key, :secret
     attr_reader   :format
     
     def initialize *args
       options = args.last.is_a?(Hash) ? args.pop : {}
-      @username = args[0]
-      @password = args[1]
-      unless @username && @password
+      @key = args[0]
+      @secret = args[1]
+      unless @key && @secret
         home_path = File.expand_path '~/.animotorc'
         config = if File.exist?(home_path)
           YAML.load(File.read(home_path))
@@ -50,10 +50,10 @@ module Animoto
           YAML.load(File.read('/etc/.animotorc'))
         end
         if config
-          @username ||= config['username']
-          @password ||= config['password']
+          @key ||= config['key']
+          @secret ||= config['secret']
         else
-          raise ArgumentError, "You must supply a username and password"
+          raise ArgumentError, "You must supply your key and secret"
         end
       end
       @format = 'json'
@@ -101,7 +101,7 @@ module Animoto
       req = HTTP_METHOD_MAP[method].new uri
       req.body = body
       req.initialize_http_header headers
-      req.basic_auth username, password
+      req.basic_auth key, secret
       req
     end
     

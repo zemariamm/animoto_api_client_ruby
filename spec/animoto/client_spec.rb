@@ -11,15 +11,19 @@ describe Animoto::Client do
 
   describe "supplying credentials" do
     describe "manually" do
-      it "should accept the username and password as the first two parameters on initialization" do
-        c = Animoto::Client.new "username", "password"
-        c.username.should == "username"
-        c.password.should == "password"
+      it "should accept the key and secret as the first two parameters on initialization" do
+        c = Animoto::Client.new "key", "secret"
+        c.key.should == "key"
+        c.secret.should == "secret"
       end
       
-      describe "when the password isn't specified (i.e. only 1 parameter was passed)" do
+      describe "when the secret isn't specified (i.e. only 1 parameter was passed)" do
+        before do
+          File.stubs(:exist?).returns(false) # <= to keep it from finding our .animotorc files
+        end
+        
         it "should raise an error" do
-          lambda { Animoto::Client.new "username" }.should raise_error
+          lambda { Animoto::Client.new "key" }.should raise_error
         end
       end
     end
@@ -28,7 +32,7 @@ describe Animoto::Client do
       before do
         @home_path  = File.expand_path("~/.animotorc")
         @etc_path   = "/etc/.animotorc"
-        @config     = "username: joe\npassword: secret"
+        @config     = "key: joe\nsecret: secret"
       end
       
       describe "when ~/.animotorc exists" do
@@ -39,8 +43,8 @@ describe Animoto::Client do
         
         it "should configure itself based on the options in ~/.animotorc" do
           c = Animoto::Client.new
-          c.username.should == "joe"
-          c.password.should == "secret"
+          c.key.should == "joe"
+          c.secret.should == "secret"
         end
       end
       
@@ -57,8 +61,8 @@ describe Animoto::Client do
           
           it "should configure itself based on the options in /etc/.animotorc" do
             c = Animoto::Client.new
-            c.username.should == "joe"
-            c.password.should == "secret"
+            c.key.should == "joe"
+            c.secret.should == "secret"
           end
         end
         
