@@ -59,7 +59,7 @@ module Animoto
       @format = 'json'
       uri = URI.parse(API_ENDPOINT)
       @http = Net::HTTP.new uri.host, uri.port
-      @http.use_ssl = true
+      # @http.use_ssl = true
     end
     
     def find klass, url, options = {}
