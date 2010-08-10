@@ -7,6 +7,7 @@ require 'yaml'
 $:.unshift File.dirname(__FILE__)
 require 'errors'
 require 'content_type'
+require 'standard_envelope'
 require 'resource'
 require 'asset'
 require 'visual'
@@ -39,6 +40,7 @@ module Animoto
     attr_reader   :format
     
     def initialize *args
+      @debug = ENV['DEBUG']
       options = args.last.is_a?(Hash) ? args.pop : {}
       @key = args[0]
       @secret = args[1]
@@ -79,7 +81,7 @@ module Animoto
     end
     
     def reload! resource, options = {}
-      resource.reload(find_request(resource.class, resource.url, options))
+      resource.load(find_request(resource.class, resource.url, options))
     end
     
     private
@@ -102,10 +104,29 @@ module Animoto
       req.body = body
       req.initialize_http_header headers
       req.basic_auth key, secret
+      if @debug
+        puts
+        puts "******************** REQUEST *********************"
+        puts "#{req.method} http#{'s' if @http.use_ssl}://#{@http.address}#{req.path} HTTP/#{@http.instance_variable_get(:@curr_http_version)}\r\n"
+        req.each_capitalized { |k,v| puts "#{k}: #{v}\r\n"}
+        puts "\r\n"
+        puts req.body if req.body
+        puts "**************************************************"      
+        puts
+      end
       req
     end
     
     def read_response response
+      if @debug
+        puts
+        puts "******************** RESPONSE ********************"
+        response.each_capitalized { |k,v| puts "#{k}: #{v}\r\n"}
+        puts "\r\n"
+        puts response.body if response.body
+        puts "**************************************************"      
+        puts
+      end
       check_status response
       parse_response response
     end
