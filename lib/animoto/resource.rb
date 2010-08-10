@@ -26,7 +26,7 @@ module Animoto
     
     def self.unpack_standard_envelope body
       {
-        :url => body['payload'][payload_key]['links']['self'],
+        :url => body['response']['payload'][payload_key]['links']['self'],
         :errors => body['response']['status']['errors'] || []
       }
     end

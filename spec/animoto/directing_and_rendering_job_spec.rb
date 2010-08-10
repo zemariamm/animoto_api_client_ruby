@@ -17,13 +17,15 @@ describe Animoto::DirectingAndRenderingJob do
   describe "loading from a response body" do
     before do
       @body = {
-        'response' => { 'status' => { 'code' => 200 } },
-        'payload' => {
-          'directing_and_rendering_job' => {
-            'state' => 'completed',
-            'links' => {
-              'self' => 'http://animoto.com/jobs/directing_and_rendering/1',
-              'video' => 'http://animoto.com/videos/1'
+        'response' => {
+          'status' => { 'code' => 200 },
+          'payload' => {
+            'directing_and_rendering_job' => {
+              'state' => 'completed',
+              'links' => {
+                'self' => 'http://animoto.com/jobs/directing_and_rendering/1',
+                'video' => 'http://animoto.com/videos/1'
+              }
             }
           }
         }

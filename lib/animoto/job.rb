@@ -2,7 +2,7 @@ module Animoto
   class Job < Animoto::Resource
     
     def self.unpack_standard_envelope body
-      super.merge(:state => body['payload'][payload_key]['state'])
+      super.merge(:state => body['response']['payload'][payload_key]['state'])
     end
         
     attr_reader :url, :state, :errors
@@ -26,7 +26,7 @@ module Animoto
     end
 
     def reload body = {}
-      @state  = body['payload'][payload_key]['state']
+      @state  = body['response']['payload'][payload_key]['state']
       @errors = (body['response']['status']['errors'] || []).collect { |e| wrap_error(e) }
       self
     end

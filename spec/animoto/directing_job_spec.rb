@@ -20,14 +20,14 @@ describe Animoto::DirectingJob do
         'response' => {
           'status' => {
             'code' => 200
-          }
-        },
-        'payload' => {
-          'directing_job' => {
-            'state' => 'completed',
-            'links' => {
-              'self' => 'http://animoto.com/jobs/directing/1',
-              'storyboard' => 'http://animoto.com/storyboards/1'
+          },
+          'payload' => {
+            'directing_job' => {
+              'state' => 'completed',
+              'links' => {
+                'self' => 'http://animoto.com/jobs/directing/1',
+                'storyboard' => 'http://animoto.com/storyboards/1'
+              }
             }
           }
         }

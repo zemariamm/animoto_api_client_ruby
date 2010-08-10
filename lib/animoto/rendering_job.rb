@@ -5,8 +5,8 @@ module Animoto
 
     def self.unpack_standard_envelope body
       super.merge({
-        :storyboard_url => body['payload'][payload_key]['links']['storyboard'],
-        :video_url      => body['payload'][payload_key]['links']['video']
+        :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
+        :video_url      => body['response']['payload'][payload_key]['links']['video']
       })
     end
     

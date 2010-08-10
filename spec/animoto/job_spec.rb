@@ -8,13 +8,13 @@ describe Animoto::Job do
         'response' => {
           'status' => {
             'code' => 200
-          }
-        },
-        'payload' => {
-          'job' => {
-            'state' => 'initial',
-            'links' => {
-              'self' => "http://animoto.com/jobs/1"
+          },
+          'payload' => {
+            'job' => {
+              'state' => 'initial',
+              'links' => {
+                'self' => "http://animoto.com/jobs/1"
+              }
             }
           }
         }
@@ -43,13 +43,13 @@ describe Animoto::Job do
                 'description' => 'There is an item in the request that is incorrectly formatted'
               }
             ]
-          }
-        },
-        'payload' => {
-          'job' => {
-            'state' => 'failed',
-            'links' => {
-              'self' => 'http://animoto.com/jobs/1'
+          },
+          'payload' => {
+            'job' => {
+              'state' => 'failed',
+              'links' => {
+                'self' => 'http://animoto.com/jobs/1'
+              }
             }
           }
         }
@@ -72,7 +72,7 @@ describe Animoto::Job do
   
   describe "returning state" do
     before do
-      @job = Animoto::Job.load 'response'=>{'status'=>{'code'=>200}},'payload'=>{'job'=>{'state'=>'initial','links'=>{'self'=>'http://animoto.com/jobs/1'}}}
+      @job = Animoto::Job.load 'response'=>{'status'=>{'code'=>200},'payload'=>{'job'=>{'state'=>'initial','links'=>{'self'=>'http://animoto.com/jobs/1'}}}}
     end
     
     describe "when 'initial'" do

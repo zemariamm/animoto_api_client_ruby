@@ -4,7 +4,7 @@ module Animoto
     endpoint '/jobs/directing_and_rendering'
 
     def self.unpack_standard_envelope body
-      super.merge(:video_url => body['payload'][payload_key]['links']['video'])
+      super.merge(:video_url => body['response']['payload'][payload_key]['links']['video'])
     end
     
     attr_reader :video, :video_url

@@ -20,15 +20,15 @@ describe Animoto::RenderingJob do
         'response' => {
           'status' => {
             'code' => 200
-          }
-        },
-        'payload' => {
-          'rendering_job' => {
-            'state' => 'completed',
-            'links' => {
-              'self' => 'http://animoto.com/jobs/rendering/1',
-              'storyboard' => 'http://animoto.com/storyboards/1',
-              'video' => 'http://animoto.com/videos/1'
+          },
+          'payload' => {
+            'rendering_job' => {
+              'state' => 'completed',
+              'links' => {
+                'self' => 'http://animoto.com/jobs/rendering/1',
+                'storyboard' => 'http://animoto.com/storyboards/1',
+                'video' => 'http://animoto.com/videos/1'
+              }
             }
           }
         }
@@ -54,5 +54,4 @@ describe Animoto::RenderingJob do
       @job.video.url.should == @job.video_url
     end
   end
-  
 end
