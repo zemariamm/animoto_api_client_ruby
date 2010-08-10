@@ -78,7 +78,7 @@ module Animoto
       DirectingAndRenderingJob.load(send_manifest(manifest, DirectingAndRenderingJob.endpoint, options))
     end
     
-    def reload resource, options = {}
+    def reload! resource, options = {}
       resource.reload(find_request(resource.class, resource.url, options))
     end
     
