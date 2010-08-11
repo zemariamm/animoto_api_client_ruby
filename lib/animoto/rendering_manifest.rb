@@ -13,11 +13,15 @@ module Animoto
       @http_callback_format = options[:http_callback_format]
     end
     
+    # Returns a representation of this manifest as a Hash.
+    #
+    # @return [Hash] this manifest as a Hash
+    # @raise [ArgumentError] if a callback URL was specified but not the format
     def to_hash
       hash  = { 'rendering_job' => { 'rendering_manifest' => { 'rendering_profile' => {} } } }
       job   = hash['rendering_job']
       if http_callback_url
-        raise ArgumentError if http_callback_format.nil?
+        raise ArgumentError, "You must specify a http_callback_format (either 'xml' or 'json')" if http_callback_format.nil?
         job['http_callback'] = http_callback_url
         job['http_callback_format'] = http_callback_format
       end
