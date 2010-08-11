@@ -12,11 +12,12 @@ module Animoto
       })
     end
 
-    attr_reader :download_url, :storyboard_url, :duration, :format, :framerate, :resolution
+    attr_reader :download_url, :storyboard_url, :storyboard, :duration, :format, :framerate, :resolution
 
     def instantiate attributes = {}
       @download_url = attributes[:download_url]
       @storyboard_url = attributes[:storyboard_url]
+      @storyboard = Animoto::Storyboard.new(:url => @storyboard_url) if @storyboard_url
       @duration = attributes[:duration]
       @format = attributes[:format]
       @framerate = attributes[:framerate]
