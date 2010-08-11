@@ -22,7 +22,7 @@ Animoto API Client
 	end
 
 	if storyboard = directing_job.storyboard
-		manifest = RenderingManifest.new storyboard, :resolution => "720p"
+		manifest = RenderingManifest.new(storyboard, :resolution => "720p", :framerate => 24, :format => 'h264')
 		rendering_job = client.render!(manifest)
 		while rendering_job.pending?
 			sleep(30)
