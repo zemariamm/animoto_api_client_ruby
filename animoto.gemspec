@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.version = Animoto.version
   s.author = "Animoto"
   s.email = "theteam@animoto.com"
-  s.files = Dir.glob("./**/*.rb") + 'README.md'
+  s.files = ['README.md', *Dir.glob("./**/*.rb")]
   s.has_rdoc = true
   s.require_paths = ["lib"]
   s.homepage = "http://animoto.com"
