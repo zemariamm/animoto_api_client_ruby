@@ -172,16 +172,6 @@ module Animoto
       req.body = body
       req.initialize_http_header headers
       req.basic_auth key, secret
-      if @debug
-        puts
-        puts "******************** REQUEST *********************"
-        puts "#{req.method} http#{'s' if @http.use_ssl}://#{@http.address}#{req.path} HTTP/#{@http.instance_variable_get(:@curr_http_version)}\r\n"
-        req.each_capitalized { |k,v| puts "#{k}: #{v}\r\n"}
-        puts "\r\n"
-        puts req.body if req.body
-        puts "**************************************************"      
-        puts
-      end
       req
     end
 
@@ -190,15 +180,6 @@ module Animoto
     # @param [Net::HTTPResponse] response the response object
     # @return [Hash] deserialized JSON response body
     def read_response response
-      if @debug
-        puts
-        puts "******************** RESPONSE ********************"
-        response.each_capitalized { |k,v| puts "#{k}: #{v}\r\n"}
-        puts "\r\n"
-        puts response.body if response.body
-        puts "**************************************************"      
-        puts
-      end
       check_status response
       parse_response response
     end
