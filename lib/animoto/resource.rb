@@ -50,13 +50,12 @@ module Animoto
       self.class.payload_key
     end
     
-    # @private
-    #
     # Makes a new instance of this class from a deserialized JSON response body. Note that
     # it assumes the hash you're passing is structured correctly and does no format checking
     # at all, so if the hash is not in the "standard envelope", this method will most likely
     # raise an error.
     #
+    # @private
     # @param [Hash] body the deserialized JSON response body
     # @return [Resource] an instance of this class
     def self.load body
@@ -87,11 +86,10 @@ module Animoto
         end
       end
 
-      # @private
-      # 
       # Registers an instance in the identity map so that subsequent finds or instantiations
       # of this resource with the same URL will return the same object.
       #
+      # @private
       # @param [Resource] instance the instance to register
       # @raise [ArgumentError] if the instance isn't of this class
       def register instance
@@ -115,22 +113,20 @@ module Animoto
       instantiate attributes
     end
     
-    # @private
-    #
     # Update this instance with new attributes from the response body.
     #
+    # @private
     # @param [Hash] body deserialized JSON from a response body
     # @return [self] this instance, updated
     def load body = {}
       instantiate unpack_standard_envelope(body)
     end
     
-    # @private
-    #
     # Since Resources can be created a number of different ways, this method does
     # the actual attribute setting for a Resource, acting much like a public version
     # of #initialize.
     #
+    # @private
     # @param [Hash] attributes hash of attributes for this resource
     # @return [self] this instance
     def instantiate attributes = {}
