@@ -207,9 +207,22 @@ module Animoto
     #
     # @param [Net::HTTPResponse] response the response object
     # @return [nil]
-    # @raise [RuntimeError] if the response code isn't in the 200 range
+    # @raise [Error,RuntimeError] if the response code isn't in the 200 range
     def check_status response
-      raise(response.message) unless (200..299).include?(response.code.to_i)
+      unless (200..299).include?(response.code.to_i)
+        if response.body
+          begin
+            json = JSON.parse(response.body)
+            errors = json['response']['status']['errors']
+          rescue => e
+            raise response.message
+          else
+            raise Animoto::Error.new(errors.collect { |e| e['message'] }.join(', '))
+          end
+        else
+          raise response.message
+        end
+      end
     end
     
     # Parses a JSON response body into a Hash.
@@ -220,7 +233,7 @@ module Animoto
     end
     
     # Creates the full content type string given a Resource class or instance
-    # @param [Class, ContentType] klass_or_instance the class or instance to build the
+    # @param [Class,ContentType] klass_or_instance the class or instance to build the
     #   content type for
     # @return [String] the full content type with the version and format included (i.e.
     #   "application/vnd.animoto.storyboard-v1+json")
