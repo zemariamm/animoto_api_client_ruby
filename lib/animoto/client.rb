@@ -1,6 +1,3 @@
-require 'uri'
-require 'net/http'
-require 'net/https'
 require 'json'
 require 'yaml'
 
@@ -31,13 +28,9 @@ module Animoto
     API_ENDPOINT      = "https://api2-staging.animoto.com/"
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
-    HTTP_METHOD_MAP   = {
-      :get  => Net::HTTP::Get,
-      :post => Net::HTTP::Post
-    }
     
     attr_accessor :key, :secret, :endpoint
-    attr_reader   :format
+    attr_reader :http_engine, :response_parser
     
     # Creates a new Client object which handles credentials, versioning, making requests, and
     # parsing responses.
@@ -57,22 +50,40 @@ module Animoto
       @key = args[0]
       @secret = args[1]
       @endpoint = options[:endpoint]
-
-      home_path = File.expand_path '~/.animotorc'
-      config = if File.exist?(home_path)
-        YAML.load(File.read(home_path))
-      elsif File.exist?('/etc/.animotorc')
-        YAML.load(File.read('/etc/.animotorc'))
-      end
-        @key ||= config['key']
-        @secret ||= config['secret']
-        @endpoint ||= config['endpoint']
-      unless @key && @secret
-        raise ArgumentError, "You must supply your key and secret"
-      end
-
+      configure_from_rc_file
       @endpoint ||= API_ENDPOINT
-      @format = 'json'
+      http_engine = options[:http_engine] || :NetHTTP
+      response_parser = options[:response_parser] || :JSON
+    end
+    
+    def http_engine= engine
+      @http_engine = case engine
+      when Animoto::HTTPEngine
+        engine
+      when Class
+        if engine.instance_methods.include?('request')
+          engine.new @base_url
+        else
+          raise ArgumentError
+        end
+      else
+        Animoto::HTTPEngine[engine].new @base_url
+      end
+    end
+    
+    def response_parser= parser
+      @response_parser = case parser
+      when Animoto::ResponseParser
+        parser
+      when Class
+        if %{format parse unparse}.all? { |m| parser.instance_methods.include? m }
+          parser.new
+        else
+          raise ArgumentError
+        end
+      else
+        Animoto::ResponseParser[parser].new
+      end
     end
     
     # Finds a resource by its URL.
@@ -124,6 +135,31 @@ module Animoto
     
     private
     
+    # Sets the API credentials from an .animotorc file. First looks for one in the current
+    # directory, then checks ~/.animotorc, then finally /etc/.animotorc.
+    #
+    # @raise [ArgumentError] if none of the files are found
+    def configure_from_rc_file
+      catch(:done) do
+        current_path = Dir.pwd + '/.animotrc'
+        config = if File.exist?(current_path)
+          YAML.laod(File.read(current_path))
+        elsif File.exist?(home_path)
+          home_path = File.expand_path '~/.animotorc'
+          YAML.load(File.read(home_path))
+        elsif File.exist?('/etc/.animotorc')
+          YAML.load(File.read('/etc/.animotorc'))
+        end
+        if config
+          @key      ||= config['key']
+          @secret   ||= config['secret']
+          @endpoint ||= config['endpoint']
+          throw :done if @key && @secret
+        end
+        raise ArgumentError, "You must supply your key and secret"
+      end
+    end
+
     # Builds a request to find a resource.
     #
     # @param [Class] klass the Resource class you're looking for
@@ -157,87 +193,8 @@ module Animoto
     #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
-    def request method, uri, body, headers = {}, options = {}
-      http = Net::HTTP.new uri.host, uri.port
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-      req = build_request method, uri, body, headers, options
-      if @debug
-        puts "********************* REQUEST  *******************"
-        puts "#{req.method} #{uri.to_s} HTTP/#{http.instance_variable_get(:@curr_http_version)}\r\n"
-        req.each_capitalized { |header, value| puts "#{header}: #{value}\r\n" }
-        puts "\r\n"
-        puts req.body unless req.method == 'GET'
-      end
-      response = http.request(req)
-      if @debug
-        puts "********************* RESPONSE *******************"
-        puts "#{response.code} #{response.message}\r\n"
-        response.each_capitalized { |header, value| puts "#{header}: #{value}\r\n" }
-        puts "\r\n"
-        body = response.body
-        if body.nil? || body.empty?
-          puts "(No content)"
-        else
-          puts body
-        end
-      end
-      read_response response
-    end
-    
-    # Builds the request object.
-    #
-    # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
-    # @param [String] uri the request path
-    # @param [String, nil] body the request body
-    # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
-    #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
-    # @param [Hash] options
-    # @return [Net::HTTPRequest] the request object
-    def build_request method, uri, body, headers, options
-      req = HTTP_METHOD_MAP[method].new uri.path
-      req.body = body
-      req.initialize_http_header headers
-      req.basic_auth key, secret
-      req
-    end
-
-    # Verifies and parses the response.
-    #
-    # @param [Net::HTTPResponse] response the response object
-    # @return [Hash] deserialized JSON response body
-    def read_response response
-      check_status response
-      parse_response response
-    end
-    
-    # Checks the status of the response to make sure it's successful.
-    #
-    # @param [Net::HTTPResponse] response the response object
-    # @return [nil]
-    # @raise [Error,RuntimeError] if the response code isn't in the 200 range
-    def check_status response
-      unless (200..299).include?(response.code.to_i)
-        if response.body
-          begin
-            json = JSON.parse(response.body)
-            errors = json['response']['status']['errors']
-          rescue => e
-            raise response.message
-          else
-            raise Animoto::Error.new(errors.collect { |e| e['message'] }.join(', '))
-          end
-        else
-          raise response.message
-        end
-      end
-    end
-    
-    # Parses a JSON response body into a Hash.
-    # @param [Net::HTTPResponse] response the response object
-    # @return [Hash] deserialized JSON response body
-    def parse_response response
-      JSON.parse(response.body)
+    def request method, url, body, headers = {}, options = {}
+      response_parser.parse(http_engine.request(method, url, body, headers, options))
     end
     
     # Creates the full content type string given a Resource class or instance
