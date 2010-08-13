@@ -27,7 +27,7 @@ require 'animoto/rendering_job'
 
 module Animoto
   class Client
-    API_ENDPOINT      = "http://api2-staging.animoto.com/"
+    API_ENDPOINT      = "https://api2-staging.animoto.com/"
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     HTTP_METHOD_MAP   = {
@@ -69,9 +69,6 @@ module Animoto
         end
       end
       @format = 'json'
-      uri = URI.parse(API_ENDPOINT)
-      @http = Net::HTTP.new uri.host, uri.port
-      # @http.use_ssl = true
     end
     
     # Finds a resource by its URL.
@@ -130,7 +127,8 @@ module Animoto
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
     def find_request klass, url, options = {}
-      request(:get, URI.parse(url).path, nil, { "Accept" => content_type_of(klass) }, options)
+      # request(:get, URI.parse(url).path, nil, { "Accept" => content_type_of(klass) }, options)
+      request(:get, URI.parse(url), nil, { "Accept" => content_type_of(klass) }, options)
     end
     
     # Builds a request requiring a manifest.
@@ -140,21 +138,47 @@ module Animoto
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
     def send_manifest manifest, endpoint, options = {}
-      request(:post, endpoint, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
+      # request(:post, endpoint, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
+      u = URI.parse(API_ENDPOINT)
+      u.path = endpoint
+      request(:post, u, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
     end
     
     # Makes a request and parses the response.
     #
     # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
-    # @param [String] uri the request path
+    # @param [URI] uri a URI object of the request URI
     # @param [String, nil] body the request body
     # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
     #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
     def request method, uri, body, headers = {}, options = {}
+      http = Net::HTTP.new uri.host, uri.port
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       req = build_request method, uri, body, headers, options
-      read_response @http.request(req)
+      if @debug
+        puts "********************* REQUEST  *******************"
+        puts "#{req.method} #{uri.to_s} HTTP/#{http.instance_variable_get(:@curr_http_version)}\r\n"
+        req.each_capitalized { |header, value| puts "#{header}: #{value}\r\n" }
+        puts "\r\n"
+        puts req.body unless req.method == 'GET'
+      end
+      response = http.request(req)
+      if @debug
+        puts "********************* RESPONSE *******************"
+        puts "#{response.code} #{response.message}\r\n"
+        response.each_capitalized { |header, value| puts "#{header}: #{value}\r\n" }
+        puts "\r\n"
+        body = response.body
+        if body.nil? || body.empty?
+          puts "(No content)"
+        else
+          puts body
+        end
+      end
+      read_response response
     end
     
     # Builds the request object.
@@ -167,7 +191,7 @@ module Animoto
     # @param [Hash] options
     # @return [Net::HTTPRequest] the request object
     def build_request method, uri, body, headers, options
-      req = HTTP_METHOD_MAP[method].new uri
+      req = HTTP_METHOD_MAP[method].new uri.path
       req.body = body
       req.initialize_http_header headers
       req.basic_auth key, secret
