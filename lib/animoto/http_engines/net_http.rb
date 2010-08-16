@@ -1,6 +1,5 @@
 require 'net/http'
 require 'net/https'
-require 'uri'
 
 module Animoto
   class HTTPEngine
@@ -12,8 +11,9 @@ module Animoto
       }
       
       def request method, url, body = nil, headers = {}, options = {}
-        http = build_http url
-        req = build_request method, url, body, headers, options
+        uri = URI.parse(url)
+        http = build_http uri
+        req = build_request method, uri, body, headers, options
         response = http.request req
         check_response response
         response.body
@@ -23,12 +23,12 @@ module Animoto
 
       # Makes a new HTTP object.
       #
-      # @param [String] url the URL
+      # @param [URI] uri a URI object of the request URL
       # @return [Net::HTTP] the HTTP object
-      def build_http url
-        uri = URI.parse(url)
+      def build_http uri
         http = Net::HTTP.new uri.host, uri.port
         http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         http
       end
       
@@ -41,7 +41,7 @@ module Animoto
       #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
       # @param [Hash] options
       # @return [Net::HTTPRequest] the request object
-      def build_request method, url, body, header, options
+      def build_request method, uri, body, header, options
         req = HTTP_METHOD_MAP[method].new uri.path
         req.body = body
         req.initialize_http_header headers

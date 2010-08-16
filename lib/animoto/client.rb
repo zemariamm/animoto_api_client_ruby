@@ -1,5 +1,6 @@
 require 'json'
 require 'yaml'
+require 'uri'
 
 require 'animoto/errors'
 require 'animoto/content_type'
@@ -167,8 +168,7 @@ module Animoto
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
     def find_request klass, url, options = {}
-      # request(:get, URI.parse(url).path, nil, { "Accept" => content_type_of(klass) }, options)
-      request(:get, URI.parse(url), nil, { "Accept" => content_type_of(klass) }, options)
+      request(:get, url, nil, { "Accept" => content_type_of(klass) }, options)
     end
     
     # Builds a request requiring a manifest.
@@ -178,10 +178,9 @@ module Animoto
     # @param [Hash] options
     # @return [Hash] deserialized JSON response body
     def send_manifest manifest, endpoint, options = {}
-      # request(:post, endpoint, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
       u = URI.parse(endpoint)
       u.path = endpoint
-      request(:post, u, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
+      request(:post, u.to_s, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
     end
     
     # Makes a request and parses the response.
