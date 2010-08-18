@@ -7,4 +7,4 @@ Spec::Runner.configure do |config|
   config.include WebMock
 end
 
-require File.dirname(__FILE__) + '/../lib/animoto/client'
+require File.expand_path(File.dirname(__FILE__) + '/../lib/animoto/client')
