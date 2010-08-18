@@ -10,12 +10,5 @@ module Animoto
       {}
     end
     
-    # Returns a representation of this manifest as JSON.
-    #
-    # @return [String] the manifest as JSON
-    def to_json
-      self.to_hash.to_json
-    end
-    
   end
 end

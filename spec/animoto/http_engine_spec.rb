@@ -16,7 +16,7 @@ describe Animoto::HTTPEngine do
   
   describe "making a request" do
     before do
-      @engine = Animoto::HTTPEngine.new "http://www.example.com/"
+      @engine = Animoto::HTTPEngine.new
     end
     
     it "should raise an implementation error" do

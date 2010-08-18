@@ -50,13 +50,13 @@ module Animoto
       self.class.payload_key
     end
     
-    # Makes a new instance of this class from a deserialized JSON response body. Note that
+    # Makes a new instance of this class from a deserialized response body. Note that
     # it assumes the hash you're passing is structured correctly and does no format checking
     # at all, so if the hash is not in the "standard envelope", this method will most likely
     # raise an error.
     #
     # @private
-    # @param [Hash] body the deserialized JSON response body
+    # @param [Hash] body the deserialized response body
     # @return [Resource] an instance of this class
     def self.load body
       new unpack_standard_envelope(body)
@@ -116,7 +116,7 @@ module Animoto
     # Update this instance with new attributes from the response body.
     #
     # @private
-    # @param [Hash] body deserialized JSON from a response body
+    # @param [Hash] body deserialized from a response body
     # @return [self] this instance, updated
     def load body = {}
       instantiate unpack_standard_envelope(body)

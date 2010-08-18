@@ -1,34 +1,6 @@
 module Animoto
   class HTTPEngine
-
-    # If a reference is made to a class under this one that hasn't been initialized yet,
-    # this will attempt to require a file with that class' name (underscored). If one is
-    # found, and the file defines the class requested, will return that class object.
-    #
-    # @param [Symbol] const the uninitialized class' name
-    # @return [Class] the class found
-    # @raise [NameError] if the file defining the class isn't found, or if the file required
-    #   doesn't define the class.
-    def self.const_missing const
-      engine_name = const.to_s.gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').gsub(/([a-z\d])([A-Z])/,'\1_\2').downcase
-      file_name = File.dirname(__FILE__) + "/http_engines/#{engine_name}.rb"
-      if File.exist?(file_name)
-        require file_name
-        const_defined?(const) ? const_get(const) : super
-      else
-        super
-      end
-    end
-    
-    def self.[] engine
-      const_get engine
-    end
-    
-    attr_accessor :base_url
-    
-    def initialize base_url
-      @base_url = base_url
-    end
+    extend DynamicClassLoader
     
     # Make a request.
     #
@@ -50,23 +22,13 @@ module Animoto
     
     private
     
+    # Checks the response and raises an error if the status isn't success.
+    #
+    # @param [Fixnum] code the HTTP status code
+    # @param [String] body the HTTP response body
+    # @raise [Animoto::Error] if the status isn't between 200 and 299
     def check_response code, body
-      raise_from_response_body(body) unless (200..299).include?(code)
-    end
-    
-    def raise_from_response_body body
-      if body
-        begin
-          json = JSON.parse(body)
-          errors = json['response']['status']['errors']
-        rescue => e
-          raise alt_message
-        else
-          raise Animoto::Error.new(errors.collect { |e| e['message'] }.join(', '))
-        end
-      else
-        raise alt_message
-      end      
+      throw(:fail, body) unless (200..299).include?(code)
     end
   end
 end

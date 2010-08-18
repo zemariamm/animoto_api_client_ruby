@@ -1,4 +1,3 @@
-require 'json'
 require 'yaml'
 require 'uri'
 
@@ -23,6 +22,9 @@ require 'animoto/job'
 require 'animoto/directing_and_rendering_job'
 require 'animoto/directing_job'
 require 'animoto/rendering_job'
+require 'animoto/dynamic_class_loader'
+require 'animoto/http_engine'
+require 'animoto/response_parser'
 
 module Animoto
   class Client
@@ -46,32 +48,46 @@ module Animoto
     # @return [Client]
     # @raise [ArgumentError] if no credentials are supplied
     def initialize *args
-      @debug = ENV['DEBUG']
       options = args.last.is_a?(Hash) ? args.pop : {}
       @key = args[0]
       @secret = args[1]
       @endpoint = options[:endpoint]
       configure_from_rc_file
       @endpoint ||= API_ENDPOINT
-      http_engine = options[:http_engine] || :NetHTTP
-      response_parser = options[:response_parser] || :JSON
     end
     
+    # Set the HTTP engine this client will use.
+    # 
+    # @param [HTTPEngine, Symbol, Class] engine you may pass a
+    #   HTTPEngine instance to use, or the symbolic name of a adapter to use,
+    #   or a Class whose instances respond to #request and return a String of
+    #   the response body
+    # @see Animoto::HTTPEngine
+    # @return [HTTPEngine] the engine instance
+    # @raise [ArgumentError] if given a class without the correct interface
     def http_engine= engine
       @http_engine = case engine
       when Animoto::HTTPEngine
         engine
       when Class
         if engine.instance_methods.include?('request')
-          engine.new @base_url
+          engine.new
         else
           raise ArgumentError
         end
       else
-        Animoto::HTTPEngine[engine].new @base_url
+        Animoto::HTTPEngine[engine].new
       end
     end
     
+    # Set the response parser this client will use.
+    # 
+    # @param [ResponseParser, Symbol, Class] parser you may pass a
+    #   ResponseParser instance to use, or the symbolic name of a adapter to use,
+    #   or a Class whose instances respond to #parse, #unparse, and #format.
+    # @see Animoto::ResponseParser
+    # @return [ResponseParser] the parser instance
+    # @raise [ArgumentError] if given a class without the correct interface
     def response_parser= parser
       @response_parser = case parser
       when Animoto::ResponseParser
@@ -159,6 +175,11 @@ module Animoto
         end
         raise ArgumentError, "You must supply your key and secret"
       end
+      if config
+        @key    ||= config['key']
+        @secret ||= config['secret']
+      end
+      raise ArgumentError, "You must supply your key and secret" unless @key && @secret
     end
 
     # Builds a request to find a resource.
@@ -166,7 +187,7 @@ module Animoto
     # @param [Class] klass the Resource class you're looking for
     # @param [String] url the URL of the resource
     # @param [Hash] options
-    # @return [Hash] deserialized JSON response body
+    # @return [Hash] deserialized response body
     def find_request klass, url, options = {}
       request(:get, url, nil, { "Accept" => content_type_of(klass) }, options)
     end
@@ -176,24 +197,43 @@ module Animoto
     # @param [Manifest] manifest the manifest being acted on
     # @param [String] endpoint the endpoint to send the request to
     # @param [Hash] options
-    # @return [Hash] deserialized JSON response body
+    # @return [Hash] deserialized response body
     def send_manifest manifest, endpoint, options = {}
       u = URI.parse(endpoint)
       u.path = endpoint
-      request(:post, u.to_s, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
+      request(
+        :post,
+        u.to_s,
+        response_parser.unparse(manifest.to_hash),
+        { "Accept" => "application/#{response_parser.format}", "Content-Type" => content_type_of(manifest) },
+        options
+      )
     end
     
     # Makes a request and parses the response.
     #
     # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
-    # @param [URI] uri a URI object of the request URI
+    # @param [String] url the URL of the request
     # @param [String, nil] body the request body
     # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
     #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
     # @param [Hash] options
-    # @return [Hash] deserialized JSON response body
+    # @return [Hash] deserialized response body
+    # @raise [Error]
     def request method, url, body, headers = {}, options = {}
-      response_parser.parse(http_engine.request(method, url, body, headers, options))
+      error = catch(:fail) do
+        options = { :username => @key, :password => @secret }.merge(options)
+        response = http_engine.request(method, url, body, headers, options)
+        return response_parser.parse(response)
+      end
+      if error
+        errors = response_parser.parse(error)['response']['status']['errors']
+        raise Animoto::Error.new(errors.collect { |e| e['message'] }.join(', '))
+      else
+        raise Animoto::Error
+      end
+    rescue NoMethodError => e
+      raise Animoto::Error.new("Invalid response (#{error.inspect})")
     end
     
     # Creates the full content type string given a Resource class or instance
@@ -203,7 +243,7 @@ module Animoto
     #   "application/vnd.animoto.storyboard-v1+json")
     def content_type_of klass_or_instance
       klass = klass_or_instance.is_a?(Class) ? klass_or_instance : klass_or_instance.class
-      "#{BASE_CONTENT_TYPE}.#{klass.content_type}-v#{API_VERSION}+#{format}"
+      "#{BASE_CONTENT_TYPE}.#{klass.content_type}-v#{API_VERSION}+#{response_parser.format}"
     end
     
   end

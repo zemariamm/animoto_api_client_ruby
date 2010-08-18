@@ -20,7 +20,7 @@ module Animoto
         {
           :url => body['response']['payload'][payload_key]['links']['self'],
           :errors => body['response']['status']['errors'] || []
-        }  
+        }
       end
     end
   end

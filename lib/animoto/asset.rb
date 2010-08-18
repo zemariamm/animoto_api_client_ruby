@@ -15,11 +15,5 @@ module Animoto
       { 'source' => @source }
     end
     
-    # Returns a representation of this asset as JSON.
-    #
-    # @return [String] this asset as JSON
-    def to_json
-      self.to_hash.to_json
-    end
   end
 end

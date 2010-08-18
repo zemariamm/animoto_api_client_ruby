@@ -1,3 +1,4 @@
+require 'base64'
 require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Animoto::Client do
@@ -42,15 +43,16 @@ describe Animoto::Client do
     
     describe "automatically" do
       before do
+        @here_path  = File.expand_path("./.animotorc")
         @home_path  = File.expand_path("~/.animotorc")
         @etc_path   = "/etc/.animotorc"
         @config     = "key: joe\nsecret: secret\nendpoint: https://api.animoto.com/"
       end
       
-      describe "when ~/.animotorc exists" do
+      describe "when ./.animotorc exists" do
         before do
-          File.stubs(:exist?).with(@home_path).returns(true)
-          File.stubs(:read).with(@home_path).returns(@config)
+          File.stubs(:exist?).with(@here_path).returns(true)
+          File.stubs(:read).with(@here_path).returns(@config)
         end
         
         it "should configure itself based on the options in ~/.animotorc" do
@@ -61,28 +63,47 @@ describe Animoto::Client do
         end
       end
       
-      describe "when ~/.animotorc doesn't exist" do
+      describe "when ./.animotorc doesn't exist" do
         before do
-          File.stubs(:exist?).with(@home_path).returns(false)
+          File.stubs(:exist?).with(@here_path).returns(false)
         end
         
-        describe "when /etc/.animotorc exists" do
+        describe "when ~/.animotorc exists" do
           before do
-            File.stubs(:exist?).with(@etc_path).returns(true)
-            File.stubs(:read).with(@etc_path).returns(@config)
+            File.stubs(:exist?).with(@home_path).returns(true)
+            File.stubs(:read).with(@home_path).returns(@config)
           end
-          
-          it "should configure itself based on the options in /etc/.animotorc" do
+        
+          it "should configure itself based on the options in ~/.animotorc" do
             c = Animoto::Client.new
             c.key.should == "joe"
             c.secret.should == "secret"
             c.endpoint.should == "https://api.animoto.com/"
           end
         end
+      
+        describe "when ~/.animotorc doesn't exist" do
+          before do
+            File.stubs(:exist?).with(@home_path).returns(false)
+          end
         
-        describe "when /etc/.animotorc doesn't exist" do
-          it "should raise an error" do
-            lambda { Animoto::Client.new }.should raise_error
+          describe "when /etc/.animotorc exists" do
+            before do
+              File.stubs(:exist?).with(@etc_path).returns(true)
+              File.stubs(:read).with(@etc_path).returns(@config)
+            end
+          
+            it "should configure itself based on the options in /etc/.animotorc" do
+              c = Animoto::Client.new
+              c.key.should == "joe"
+              c.secret.should == "secret"
+            end
+          end
+        
+          describe "when /etc/.animotorc doesn't exist" do
+            it "should raise an error" do
+              lambda { Animoto::Client.new }.should raise_error
+            end
           end
         end
       end
@@ -91,9 +112,10 @@ describe Animoto::Client do
     
   describe "finding an instance by identifier" do
     before do
-      @url = "https://api.animoto.com/storyboards/1"
-      @body = {'response'=>{'status'=>{'code'=>200}},'payload'=>{'storyboard'=>{'links'=>{'self'=>@url}}}}
-      stub_request(:get, @url).to_return(:body => @body.to_json, :status => [200,"OK"])
+      @url = "https://joe:secret@api.animoto.com/storyboards/1"
+      hash = {'response'=>{'status'=>{'code'=>200},'payload'=>{'storyboard'=>{'links'=>{'self'=>@url,'preview'=>'http://animoto.com/preview/1.mp4'},'metadata'=>{'duration'=>100,'visuals_count'=>1}}}}}
+      body = client.response_parser.unparse(hash)
+      stub_request(:get, @url).to_return(:body => body, :status => [200,"OK"])
     end
     
     it "should make a GET request to the given url" do
@@ -103,7 +125,7 @@ describe Animoto::Client do
     
     it "should ask for a response in the proper format" do
       client.find(Animoto::Storyboard, @url)
-      WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+json"})
+      WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+xml" })
     end
     
     it "should not sent a request body" do
@@ -118,10 +140,11 @@ describe Animoto::Client do
   
   describe "reloading an instance" do
     before do
-      @url = 'https://api.animoto.com/jobs/directing/1'
+      @url = 'https://joe:secret@api.animoto.com/jobs/directing/1'
       @job = Animoto::DirectingJob.new :state => 'initial', :url => @url
-      @body = {'response'=>{'status'=>{'code'=>200}},'payload'=>{'directing_job'=>{'state'=>'retrieving_assets','links'=>{'self'=>@url}}}}
-      stub_request(:get, @url).to_return(:body => @body.to_json, :status => [200,"OK"])
+      hash = {'response'=>{'status'=>{'code'=>200},'payload'=>{'directing_job'=>{'state'=>'retrieving_assets','links'=>{'self'=>@url,'storyboard'=>'http://api.animoto.com/storyboards/1'}}}}}
+      body = client.response_parser.unparse(hash)
+      stub_request(:get, @url).to_return(:body => body, :status => [200,"OK"])
       @job.state.should == 'initial' # sanity check
     end
     
