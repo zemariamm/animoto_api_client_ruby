@@ -23,6 +23,11 @@ Animoto services from a Ruby environment or using the Ruby language.
 <a name="what_is_covered_in_this_document"></a>
 ## What is covered in this document
 
+This document covers the technical details of the Animoto API Ruby client and 
+provides a general overview of its use.
+
+This document does not cover the details of the Animoto API itself. For such information please see the [Animoto API documentation][api_docs]
+
 <a name="getting_started_using_the_ruby_client"></a>
 ## Getting Started using the Ruby Client
 
@@ -31,7 +36,7 @@ Animoto services from a Ruby environment or using the Ruby language.
 #### Readers of this document should be familiar with...
 
   * The [the Ruby language](http://ruby-lang.org)
-  * The [Animoto API documentation](http://animoto.com/developer/api)
+  * The [Animoto API documentation][api_docs]
 
 #### Authentication
 
@@ -188,4 +193,4 @@ You might want to checkout our [the wiki page](http://wiki.github.com/animoto/an
 on coding standards, new features, etc.
 
 
-
+[api_docs]: http://animoto.com/developer/api
