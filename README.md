@@ -62,8 +62,8 @@ and viewed.
 Every time a new set of photos is to be transformed into a video, or every
 time a new set of artistic choices is to be made, a new storyboard must be
 created via directing. Once directing happens and a storyboard is created,
-videos can be rendered from that storyboard at any time, each with a different
-resolutions, encodings, etc suitable to different display environments.
+videos can be rendered from that storyboard at any time, each with different
+resolutions, encodings, etc. suitable to different display environments.
 
 While directing and rendering are generally speedy processes, they do take
 longer than is appropriate for a typical HTTP request. These long-running
