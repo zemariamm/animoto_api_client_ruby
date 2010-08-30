@@ -61,18 +61,18 @@ describe Animoto::RenderingManifest do
       manifest.to_hash['rendering_job']['rendering_manifest']['storyboard_url'].should == @storyboard.url
     end
     
-    it "should have a 'rendering_profile' object in the manifest" do
-      manifest.to_hash['rendering_job']['rendering_manifest'].should have_key('rendering_profile')
-      manifest.to_hash['rendering_job']['rendering_manifest']['rendering_profile'].should be_a(Hash)
+    it "should have a 'rendering_parameters' object in the manifest" do
+      manifest.to_hash['rendering_job']['rendering_manifest'].should have_key('rendering_parameters')
+      manifest.to_hash['rendering_job']['rendering_manifest']['rendering_parameters'].should be_a(Hash)
     end
     
-    describe "rendering profile" do
+    describe "rendering parameters" do
       before do
-        @profile = manifest.to_hash['rendering_job']['rendering_manifest']['rendering_profile']
+        @profile = manifest.to_hash['rendering_job']['rendering_manifest']['rendering_parameters']
       end
       
-      it "should have a 'vertical_resolution' key" do
-        @profile['vertical_resolution'].should == manifest.resolution
+      it "should have a 'resolution' key" do
+        @profile['resolution'].should == manifest.resolution
       end
       
       it "should have a 'framerate' key" do

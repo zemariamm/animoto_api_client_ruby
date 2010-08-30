@@ -8,7 +8,7 @@ describe Animoto::DirectingAndRenderingManifest do
   
   describe "generating a hash" do
     before do
-      manifest(:title => 'Funderful Wonderment', :producer => 'Senor Spielbergo', :pacing => 'double',
+      manifest(:title => 'Funderful Wonderment', :pacing => 'double',
         :resolution => "720p", :framerate => 24, :format => 'flv')
       @image = manifest.add_image 'http://website.com/image.png'
       @title_card = manifest.add_title_card 'woohoo', 'this is awesome'
@@ -67,11 +67,6 @@ describe Animoto::DirectingAndRenderingManifest do
       it "should have a 'pacing' key in the manifest" do
         @hash.should have_key('pacing')
         @hash['pacing'].should == manifest.pacing
-      end
-    
-      it "should have a 'producer_name' key in the manifest" do
-        @hash.should have_key('producer_name')
-        @hash['producer_name'].should == manifest.producer
       end
     
       it "should have a 'visuals' key in the manifest" do

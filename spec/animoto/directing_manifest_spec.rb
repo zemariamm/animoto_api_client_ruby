@@ -23,14 +23,6 @@ describe Animoto::DirectingManifest do
       manifest.style.should == 'original'
     end
     
-    it "should default to no producer" do
-      manifest.producer.should be_nil
-    end
-    
-    it "should be able to specify the producer with a :producer parameter" do
-      manifest(:producer => "Senor Spielbergo").producer.should == "Senor Spielbergo"
-    end
-    
     it "should default to having to visuals" do
       manifest.visuals.should be_empty
     end
@@ -92,7 +84,7 @@ describe Animoto::DirectingManifest do
   
   describe "generating a hash" do
     before do
-      manifest(:title => 'Funderful Wonderment', :producer => 'Senor Spielbergo', :pacing => 'double')
+      manifest(:title => 'Funderful Wonderment', :pacing => 'double')
       @image = manifest.add_image 'http://website.com/image.png'
       @title_card = manifest.add_title_card 'woohoo', 'this is awesome'
       @footage = manifest.add_footage 'http://website.com/movie.mp4'
@@ -117,11 +109,6 @@ describe Animoto::DirectingManifest do
     it "should have a 'pacing' key in the manifest" do
       manifest.to_hash['directing_job']['directing_manifest'].should have_key('pacing')
       manifest.to_hash['directing_job']['directing_manifest']['pacing'].should == manifest.pacing
-    end
-    
-    it "should have a 'producer_name' key in the manifest" do
-      manifest.to_hash['directing_job']['directing_manifest'].should have_key('producer_name')
-      manifest.to_hash['directing_job']['directing_manifest']['producer_name'].should == manifest.producer
     end
     
     it "should have a 'visuals' key in the manifest" do

@@ -1,6 +1,7 @@
 module Animoto
   class Footage < Animoto::Asset
     include Animoto::Visual
+    include Animoto::Coverable
     
     attr_accessor :audio_mix, :start_time, :duration
     
@@ -9,7 +10,7 @@ module Animoto
       hash['audio_mix'] = 'MIX' if audio_mix
       hash['start_time'] = start_time if start_time
       hash['duration'] = duration if duration
-      hash
+      hash 
     end
   end
 end

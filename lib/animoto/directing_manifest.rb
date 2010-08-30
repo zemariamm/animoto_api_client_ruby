@@ -1,20 +1,18 @@
 module Animoto
   class DirectingManifest < Animoto::Manifest
 
-    attr_accessor :title, :producer, :pacing, :http_callback_url, :http_callback_format
+    attr_accessor :title, :pacing, :http_callback_url, :http_callback_format
     attr_reader   :visuals, :song, :style
 
     # Creates a new DirectingManifest.
     #
     # @param [Hash] options
     # @option options [String] :title the title of this project
-    # @option options [String] :producer the name of the producer of this project
     # @option options ['default','half','double'] :pacing ('default') the pacing for this project
     # @option options [String] :http_callback_url a URL to receive a callback when this job is done
     # @option options ['json','xml'] :http_callback_format the format of the callback
     def initialize options = {}
       @title      = options[:title]
-      @producer   = options[:producer]
       @pacing     = options[:pacing] || 'default'
       @style      = 'original'
       @visuals    = []
@@ -102,7 +100,6 @@ module Animoto
       manifest['style'] = style
       manifest['pacing'] = pacing if pacing
       manifest['title'] = title if title
-      manifest['producer_name'] = producer if producer
       manifest['visuals'] = []
       visuals.each do |visual|
         manifest['visuals'] << visual.to_hash

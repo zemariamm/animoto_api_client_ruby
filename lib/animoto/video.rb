@@ -3,7 +3,7 @@ module Animoto
     
     def self.unpack_standard_envelope body
       super.merge({
-        :download_url => body['response']['payload'][payload_key]['links']['download'],
+        :download_url => body['response']['payload'][payload_key]['links']['file'],
         :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
         :duration => body['response']['payload'][payload_key]['metadata']['duration'],
         :format   => body['response']['payload'][payload_key]['metadata']['format'],
