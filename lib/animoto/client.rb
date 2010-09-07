@@ -36,7 +36,7 @@ module Animoto
       :post => Net::HTTP::Post
     }
     
-    attr_accessor :key, :secret
+    attr_accessor :key, :secret, :endpoint
     attr_reader   :format
     
     # Creates a new Client object which handles credentials, versioning, making requests, and
@@ -44,7 +44,8 @@ module Animoto
     #
     # If you have your key and secret in ~/.animotorc or /etc/.animotorc, those credentials will
     # be read from those files (in that order) whenever you make a new Client if you don't specify
-    # them explicitly.
+    # them explicitly. You can also specify the endpoint (staging, sandbox, etc.) in the rc file.
+    # The default endpoint will be used if one isn't specified.
     #
     # @param [String] key the API key for your account
     # @param [String] secret the secret key for your account
@@ -55,20 +56,22 @@ module Animoto
       options = args.last.is_a?(Hash) ? args.pop : {}
       @key = args[0]
       @secret = args[1]
-      unless @key && @secret
-        home_path = File.expand_path '~/.animotorc'
-        config = if File.exist?(home_path)
-          YAML.load(File.read(home_path))
-        elsif File.exist?('/etc/.animotorc')
-          YAML.load(File.read('/etc/.animotorc'))
-        end
-        if config
-          @key ||= config['key']
-          @secret ||= config['secret']
-        else
-          raise ArgumentError, "You must supply your key and secret"
-        end
+      @endpoint = options[:endpoint]
+
+      home_path = File.expand_path '~/.animotorc'
+      config = if File.exist?(home_path)
+        YAML.load(File.read(home_path))
+      elsif File.exist?('/etc/.animotorc')
+        YAML.load(File.read('/etc/.animotorc'))
       end
+        @key ||= config['key']
+        @secret ||= config['secret']
+        @endpoint ||= config['endpoint']
+      unless @key && @secret
+        raise ArgumentError, "You must supply your key and secret"
+      end
+
+      @endpoint ||= API_ENDPOINT
       @format = 'json'
     end
     
@@ -140,7 +143,7 @@ module Animoto
     # @return [Hash] deserialized JSON response body
     def send_manifest manifest, endpoint, options = {}
       # request(:post, endpoint, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
-      u = URI.parse(API_ENDPOINT)
+      u = URI.parse(endpoint)
       u.path = endpoint
       request(:post, u, manifest.to_json, { "Accept" => "application/#{format}", "Content-Type" => content_type_of(manifest) }, options)
     end

@@ -9,12 +9,17 @@ describe Animoto::Client do
     @object ||= Object.new
   end
 
-  describe "supplying credentials" do
+  describe "supplying credentials and endpoint" do
     describe "manually" do
       it "should accept the key and secret as the first two parameters on initialization" do
         c = Animoto::Client.new "key", "secret"
         c.key.should == "key"
         c.secret.should == "secret"
+      end
+      
+      it "should accept an endpoint as an option" do
+        c = Animoto::Client.new "key", "secret", :endpoint => "https://api.animoto.com/"
+        c.endpoint.should == "https://api.animoto.com/"
       end
       
       describe "when the secret isn't specified (i.e. only 1 parameter was passed)" do
@@ -26,13 +31,20 @@ describe Animoto::Client do
           lambda { Animoto::Client.new "key" }.should raise_error
         end
       end
+      
+      describe "when the endpoint isn't specified" do
+        it "should set the endpoint to the default" do
+          c = Animoto::Client.new "key", "secret"
+          c.endpoint.should == Animoto::Client::API_ENDPOINT
+        end
+      end
     end
     
     describe "automatically" do
       before do
         @home_path  = File.expand_path("~/.animotorc")
         @etc_path   = "/etc/.animotorc"
-        @config     = "key: joe\nsecret: secret"
+        @config     = "key: joe\nsecret: secret\nendpoint: https://api.animoto.com/"
       end
       
       describe "when ~/.animotorc exists" do
@@ -45,6 +57,7 @@ describe Animoto::Client do
           c = Animoto::Client.new
           c.key.should == "joe"
           c.secret.should == "secret"
+          c.endpoint.should == "https://api.animoto.com/"
         end
       end
       
@@ -63,6 +76,7 @@ describe Animoto::Client do
             c = Animoto::Client.new
             c.key.should == "joe"
             c.secret.should == "secret"
+            c.endpoint.should == "https://api.animoto.com/"
           end
         end
         
@@ -74,7 +88,7 @@ describe Animoto::Client do
       end
     end
   end
-  
+    
   describe "finding an instance by identifier" do
     before do
       @url = "https://api.animoto.com/storyboards/1"
