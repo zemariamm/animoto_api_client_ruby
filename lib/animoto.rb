@@ -1,5 +1,5 @@
 module Animoto
   def self.version
-    "0.0.0.alpha2"
+    "0.0.0.alpha3"
   end
 end
