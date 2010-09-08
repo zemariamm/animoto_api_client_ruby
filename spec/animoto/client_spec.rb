@@ -125,7 +125,7 @@ describe Animoto::Client do
     
     it "should ask for a response in the proper format" do
       client.find(Animoto::Storyboard, @url)
-      WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+xml" })
+      WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+json" })
     end
     
     it "should not sent a request body" do

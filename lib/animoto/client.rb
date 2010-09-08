@@ -54,6 +54,8 @@ module Animoto
       @endpoint = options[:endpoint]
       configure_from_rc_file
       @endpoint ||= API_ENDPOINT
+      __send__ :http_engine=, options[:http_engine] || :net_http
+      __send__ :response_parser=, options[:response_parser] || :json
     end
     
     # Set the HTTP engine this client will use.
@@ -158,9 +160,10 @@ module Animoto
     # @raise [ArgumentError] if none of the files are found
     def configure_from_rc_file
       catch(:done) do
-        current_path = Dir.pwd + '/.animotrc'
+        current_path = Dir.pwd + '/.animotorc'
+        home_path    = File.expand_path('~/.animotorc')
         config = if File.exist?(current_path)
-          YAML.laod(File.read(current_path))
+          YAML.load(File.read(current_path))
         elsif File.exist?(home_path)
           home_path = File.expand_path '~/.animotorc'
           YAML.load(File.read(home_path))
@@ -175,11 +178,6 @@ module Animoto
         end
         raise ArgumentError, "You must supply your key and secret"
       end
-      if config
-        @key    ||= config['key']
-        @secret ||= config['secret']
-      end
-      raise ArgumentError, "You must supply your key and secret" unless @key && @secret
     end
 
     # Builds a request to find a resource.
