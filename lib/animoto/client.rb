@@ -161,25 +161,22 @@ module Animoto
     #
     # @raise [ArgumentError] if none of the files are found
     def configure_from_rc_file
-      catch(:done) do
-        current_path = Dir.pwd + '/.animotorc'
-        home_path    = File.expand_path('~/.animotorc')
-        config = if File.exist?(current_path)
-          YAML.load(File.read(current_path))
-        elsif File.exist?(home_path)
-          home_path = File.expand_path '~/.animotorc'
-          YAML.load(File.read(home_path))
-        elsif File.exist?('/etc/.animotorc')
-          YAML.load(File.read('/etc/.animotorc'))
-        end
-        if config
-          @key      ||= config['key']
-          @secret   ||= config['secret']
-          @endpoint ||= config['endpoint']
-          throw :done if @key && @secret
-        end
-        raise ArgumentError, "You must supply your key and secret"
+      current_path = Dir.pwd + '/.animotorc'
+      home_path    = File.expand_path('~/.animotorc')
+      config = if File.exist?(current_path)
+        YAML.load(File.read(current_path))
+      elsif File.exist?(home_path)
+        home_path = File.expand_path '~/.animotorc'
+        YAML.load(File.read(home_path))
+      elsif File.exist?('/etc/.animotorc')
+        YAML.load(File.read('/etc/.animotorc'))
       end
+      if config
+        @key      ||= config['key']
+        @secret   ||= config['secret']
+        @endpoint ||= config['endpoint']
+      end
+      @key && @secret ? return : raise(ArgumentError, "You must supply your key and secret")
     end
 
     # Builds a request to find a resource.
