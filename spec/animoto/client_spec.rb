@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../spec_helper")
 
 describe Animoto::Client do
   def client options = {}
-    @client ||= Animoto::Client.new "joe", "secret", options
+    @client ||= Animoto::Client.new "joe", "secret", options.merge(:logger => ::Logger.new('/dev/null'))
   end
 
   def object

@@ -1,5 +1,6 @@
 require 'yaml'
 require 'uri'
+require 'logger'
 
 require 'animoto/errors'
 require 'animoto/content_type'
@@ -32,7 +33,7 @@ module Animoto
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     
-    attr_accessor :key, :secret, :endpoint
+    attr_accessor :key, :secret, :endpoint, :logger
     attr_reader :http_engine, :response_parser
     
     # Creates a new Client object which handles credentials, versioning, making requests, and
@@ -49,9 +50,10 @@ module Animoto
     # @raise [ArgumentError] if no credentials are supplied
     def initialize *args
       options = args.last.is_a?(Hash) ? args.pop : {}
-      @key = args[0]
-      @secret = args[1]
+      @key      = args[0]
+      @secret   = args[1]
       @endpoint = options[:endpoint]
+      @logger   = options[:logger] || ::Logger.new(STDOUT)
       configure_from_rc_file
       @endpoint ||= API_ENDPOINT
       __send__ :http_engine=, options[:http_engine] || :net_http
@@ -221,17 +223,23 @@ module Animoto
     def request method, url, body, headers = {}, options = {}
       error = catch(:fail) do
         options = { :username => @key, :password => @secret }.merge(options)
+        @logger.info "Sending request to #{url.inspect} with body #{body.inspect}"
         response = http_engine.request(method, url, body, headers, options)
+        @logger.info "Received response #{response.inspect}"
         return response_parser.parse(response)
       end
       if error
         errors = response_parser.parse(error)['response']['status']['errors']
-        raise Animoto::Error.new(errors.collect { |e| e['message'] }.join(', '))
+        err_string = errors.collect { |e| e['message'] }.join(', ')
+        @logger.error "Error response from server: #{err_string}"
+        raise Animoto::Error.new(err_string)
       else
+        @logger.error "Error sending request to #{url.inspect}"
         raise Animoto::Error
       end
     rescue NoMethodError => e
-      raise Animoto::Error.new("Invalid response (#{error.inspect})")
+      @logger.error e.inspect
+      raise Animoto::Error.new("Invalid response (#{e.inspect})")
     end
     
     # Creates the full content type string given a Resource class or instance
