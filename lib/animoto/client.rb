@@ -196,7 +196,7 @@ module Animoto
     # @param [Hash] options
     # @return [Hash] deserialized response body
     def send_manifest manifest, endpoint, options = {}
-      u = URI.parse(endpoint)
+      u = URI.parse(self.endpoint)
       u.path = endpoint
       request(
         :post,
