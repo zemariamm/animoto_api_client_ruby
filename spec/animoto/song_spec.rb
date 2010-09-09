@@ -7,9 +7,9 @@ describe Animoto::Song do
       @song = Animoto::Song.new 'http://website.com/song.mp3'
     end
     
-    it "should have a 'source' key with the url" do
-      @song.to_hash.should have_key('source')
-      @song.to_hash['source'].should == @song.source
+    it "should have a 'source_url' key with the url" do
+      @song.to_hash.should have_key('source_url')
+      @song.to_hash['source_url'].should == @song.source
     end
     
     describe "if a start time was specified" do

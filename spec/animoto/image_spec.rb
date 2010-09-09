@@ -11,9 +11,9 @@ describe Animoto::Image do
       @image = Animoto::Image.new 'http://website.com/image.png'
     end
     
-    it "should have a 'source' key with the url" do
-      @image.to_hash.should have_key('source')
-      @image.to_hash['source'].should == @image.source
+    it "should have a 'source_url' key with the url" do
+      @image.to_hash.should have_key('source_url')
+      @image.to_hash['source_url'].should == @image.source
     end
     
     describe "if rotated" do

@@ -11,9 +11,9 @@ describe Animoto::Footage do
       @footage = Animoto::Footage.new 'http://website.com/movie.mp4'
     end
     
-    it "should have a 'source' key with the url" do
-      @footage.to_hash.should have_key('source')
-      @footage.to_hash['source'].should == @footage.source
+    it "should have a 'source_url' key with the url" do
+      @footage.to_hash.should have_key('source_url')
+      @footage.to_hash['source_url'].should == @footage.source
     end
     
     it "should not have a 'spotlit' key" do
