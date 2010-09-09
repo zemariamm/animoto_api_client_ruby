@@ -12,7 +12,7 @@ module Animoto
     #
     # @return [Hash] this asset as a Hash
     def to_hash
-      { 'source' => @source }
+      { 'source_url' => @source }
     end
     
   end
