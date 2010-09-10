@@ -220,9 +220,9 @@ module Animoto
     def request method, url, body, headers = {}, options = {}
       error = catch(:fail) do
         options = { :username => @key, :password => @secret }.merge(options)
-        @logger.info "Sending request to #{url.inspect} with body #{body.inspect}"
+        @logger.info "Sending request to #{url.inspect} with body #{body}"
         response = http_engine.request(method, url, body, headers, options)
-        @logger.info "Received response #{response.inspect}"
+        @logger.info "Received response #{response}"
         return response_parser.parse(response)
       end
       if error
