@@ -114,7 +114,6 @@ client and using HTTP callbacks for status updates.
     # "http://mysite.com/animoto_callback"
     client.direct_and_render!(manifest)
 
-
 ### A basic example using the Ruby client
 
 This example shows how to separately direct a storyboard and render a video
@@ -129,7 +128,7 @@ status.
 
     # Create a directing manifest.  The directing manifest controls the images
     # and other visual elements that will be in our final video.
-    manifest = DirectingManifest.new(:title => "Amazing Title!", :producer => "Fishy Joe")
+    manifest = DirectingManifest.new(:title => "Amazing Title!")
     
     # Add some images, text, and footage to our manifest.
     manifest << Image.new("http://website.com/picture.png")
@@ -138,7 +137,7 @@ status.
     manifest << Footage.new("http://website.com/movie.mp4", :duration => 3.5)
     
     # Setup the soundtrack.
-    manifest << Song.new("http://website.com/song.mp3", :artist => "Fishy Joe")
+    manifest << Song.new("http://website.com/song.mp3")
 
     # Request a new directing job by sending the API our directing manifest.
     directing_job = client.direct!(manifest)
@@ -169,7 +168,8 @@ status.
       # If the job has a video associated with it, everything worked out ok.
     	if video = rendering_job.video
     	  # Print a link to download the video file.
-    		puts video.url
+    	  client.reload!(video)
+    		puts video.download_url
     	else
     	  # Something happened during rendering...
     		raise rendering_job.errors.first
