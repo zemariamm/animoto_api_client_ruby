@@ -14,10 +14,10 @@ module Animoto
       hash  = super
       directing_job = hash.delete('directing_job')
       hash['directing_and_rendering_job'] = directing_job.merge('rendering_manifest' => { 'rendering_parameters' => {}})
-      profile = hash['directing_and_rendering_job']['rendering_manifest']['rendering_parameters']
-      profile['vertical_resolution'] = resolution
-      profile['framerate'] = framerate
-      profile['format'] = format
+      params = hash['directing_and_rendering_job']['rendering_manifest']['rendering_parameters']
+      params['resolution'] = resolution
+      params['framerate'] = framerate
+      params['format'] = format
       hash
     end
     

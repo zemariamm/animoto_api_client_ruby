@@ -121,8 +121,8 @@ describe Animoto::DirectingAndRenderingManifest do
           @profile = @hash['rendering_parameters']
         end
 
-        it "should have a 'vertical_resolution' key" do
-          @profile['vertical_resolution'].should == manifest.resolution
+        it "should have a 'resolution' key" do
+          @profile['resolution'].should == manifest.resolution
         end
 
         it "should have a 'framerate' key" do
