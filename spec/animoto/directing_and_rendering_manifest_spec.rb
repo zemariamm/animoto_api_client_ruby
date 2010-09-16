@@ -111,14 +111,14 @@ describe Animoto::DirectingAndRenderingManifest do
         @hash = manifest.to_hash['directing_and_rendering_job']['rendering_manifest']
       end
       
-      it "should have a 'rendering_profile' object in the manifest" do
-        @hash.should have_key('rendering_profile')
-        @hash['rendering_profile'].should be_a(Hash)
+      it "should have a 'rendering_parameters' object in the manifest" do
+        @hash.should have_key('rendering_parameters')
+        @hash['rendering_parameters'].should be_a(Hash)
       end
 
-      describe "rendering_profile" do
+      describe "rendering_parameters" do
         before do
-          @profile = @hash['rendering_profile']
+          @profile = @hash['rendering_parameters']
         end
 
         it "should have a 'vertical_resolution' key" do
