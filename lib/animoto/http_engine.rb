@@ -28,7 +28,7 @@ module Animoto
     # @param [String] body the HTTP response body
     # @raise [Animoto::Error] if the status isn't between 200 and 299
     def check_response code, body
-      throw(:fail, body) unless (200..299).include?(code)
+      throw(:fail, [code,body]) unless (200..299).include?(code)
     end
   end
 end

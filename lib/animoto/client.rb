@@ -218,18 +218,23 @@ module Animoto
     # @return [Hash] deserialized response body
     # @raise [Error]
     def request method, url, body, headers = {}, options = {}
-      error = catch(:fail) do
+      code, body = catch(:fail) do
         options = { :username => @key, :password => @secret }.merge(options)
         @logger.info "Sending request to #{url.inspect} with body #{body}"
         response = http_engine.request(method, url, body, headers, options)
         @logger.info "Received response #{response}"
         return response_parser.parse(response)
       end
-      if error
-        errors = response_parser.parse(error)['response']['status']['errors']
-        err_string = errors.collect { |e| e['message'] }.join(', ')
-        @logger.error "Error response from server: #{err_string}"
-        raise Animoto::Error.new(err_string)
+      if code
+        if body.empty?
+          @logger.error "HTTP error (#{code})"
+          raise Animoto::Error.new("HTTP error (#{code})")
+        else
+          errors = response_parser.parse(body)['response']['status']['errors']
+          err_string = errors.collect { |e| e['message'] }.join(', ')
+          @logger.error "Error response from server: #{err_string}"
+          raise Animoto::Error.new(err_string)
+        end
       else
         @logger.error "Error sending request to #{url.inspect}"
         raise Animoto::Error
