@@ -29,7 +29,7 @@ require 'animoto/response_parser'
 
 module Animoto
   class Client
-    API_ENDPOINT      = "https://api2-staging.animoto.com/"
+    API_ENDPOINT      = "https://api2-sandbox.animoto.com/"
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     
