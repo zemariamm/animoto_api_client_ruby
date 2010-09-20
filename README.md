@@ -31,6 +31,19 @@ This document does not cover the details of the Animoto API itself. For such inf
 <a name="getting_started_using_the_ruby_client"></a>
 ## Getting Started using the Ruby Client
 
+### Installation
+
+You can install the Animoto API Ruby Client either through [RubyGems](http://rubygems.org):
+
+    gem install animoto -v 0.0.0.alpha8 --pre
+
+Or by cloning [the repository](http://github.com/animoto/animoto_api_client_ruby) on [GitHub](http://github.com/) and building it from source:
+
+    git clone git://github.com/animoto/animoto_api_client_ruby.git
+    cd animoto_api_client_ruby
+    gem build animoto.gemspec
+    gem install animoto-0.0.0.alpha8.gem
+
 ### Prerequisites
 
 #### Readers of this document should be familiar with...
