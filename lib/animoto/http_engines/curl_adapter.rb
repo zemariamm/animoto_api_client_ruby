@@ -6,7 +6,7 @@ module Animoto
       
       def request method, url, body = nil, headers = {}, options = {}
         curl = build_curl method, url, body, headers, options
-        perform curl, method
+        perform curl, method, body
         check_response curl.response_code, curl.body_str
         curl.body_str
       end
@@ -23,7 +23,7 @@ module Animoto
         end
       end
       
-      def perform curl, method
+      def perform curl, method, body
         case method
         when :get
           curl.http_get
