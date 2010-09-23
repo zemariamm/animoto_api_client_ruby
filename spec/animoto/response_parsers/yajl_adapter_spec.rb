@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Animoto::ResponseParser::YajlAdapter do
+describe Animoto::ResponseParsers::YajlAdapter do
   
   before do
-    @parser = Animoto::ResponseParser::YajlAdapter.new
+    @parser = Animoto::ResponseParsers::YajlAdapter.new
   end
   
   it "should be JSON format" do

@@ -1,8 +1,8 @@
 require 'patron'
 
 module Animoto
-  class HTTPEngine
-    class PatronAdapter < Animoto::HTTPEngine
+  module HTTPEngines
+    class PatronAdapter < Animoto::HTTPEngines::Base
       
       def request method, url, body = nil, headers = {}, options = {}
         session = build_session options

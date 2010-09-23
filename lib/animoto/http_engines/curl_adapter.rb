@@ -1,8 +1,8 @@
 require 'curl'
 
 module Animoto
-  class HTTPEngine
-    class CurlAdapter < Animoto::HTTPEngine
+  module HTTPEngines
+    class CurlAdapter < Animoto::HTTPEngines::Base
       
       def request method, url, body = nil, headers = {}, options = {}
         curl = build_curl method, url, body, headers, options
@@ -31,7 +31,6 @@ module Animoto
           curl.http_post(body)
         end
       end
-      
     end
     
     adapter_map.merge! :curl => CurlAdapter

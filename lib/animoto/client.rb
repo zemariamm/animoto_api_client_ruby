@@ -2,30 +2,35 @@ require 'yaml'
 require 'uri'
 require 'logger'
 
-require 'animoto/errors'
-require 'animoto/content_type'
-require 'animoto/standard_envelope'
-require 'animoto/resource'
-require 'animoto/asset'
-require 'animoto/visual'
-require 'animoto/coverable'
-require 'animoto/footage'
-require 'animoto/image'
-require 'animoto/song'
-require 'animoto/title_card'
-require 'animoto/manifest'
-require 'animoto/directing_manifest'
-require 'animoto/rendering_manifest'
-require 'animoto/directing_and_rendering_manifest'
-require 'animoto/storyboard'
-require 'animoto/video'
-require 'animoto/job'
-require 'animoto/directing_and_rendering_job'
-require 'animoto/directing_job'
-require 'animoto/rendering_job'
-require 'animoto/dynamic_class_loader'
-require 'animoto/http_engine'
-require 'animoto/response_parser'
+require 'animoto/support/content_type'
+require 'animoto/support/coverable'
+require 'animoto/support/dynamic_class_loader'
+require 'animoto/support/errors'
+require 'animoto/support/standard_envelope'
+require 'animoto/support/visual'
+
+require 'animoto/resources/base'
+require 'animoto/resources/storyboard'
+require 'animoto/resources/video'
+require 'animoto/resources/jobs/base'
+require 'animoto/resources/jobs/directing_and_rendering'
+require 'animoto/resources/jobs/directing'
+require 'animoto/resources/jobs/rendering'
+
+require 'animoto/assets/base'
+require 'animoto/assets/footage'
+require 'animoto/assets/image'
+require 'animoto/assets/song'
+require 'animoto/assets/title_card'
+
+require 'animoto/manifests/base'
+require 'animoto/manifests/directing'
+require 'animoto/manifests/directing_and_rendering'
+require 'animoto/manifests/rendering'
+
+require 'animoto/http_engines/base'
+require 'animoto/response_parsers/base'
+require 'animoto/response_parsers/abstract_xml_adapter'
 
 module Animoto
   class Client
@@ -71,7 +76,7 @@ module Animoto
     # @raise [ArgumentError] if given a class without the correct interface
     def http_engine= engine
       @http_engine = case engine
-      when Animoto::HTTPEngine
+      when Animoto::HTTPEngines::Base
         engine
       when Class
         if engine.instance_methods.include?('request')
@@ -80,7 +85,7 @@ module Animoto
           raise ArgumentError
         end
       else
-        Animoto::HTTPEngine[engine].new
+        Animoto::HTTPEngines[engine].new
       end
     end
     
@@ -94,7 +99,7 @@ module Animoto
     # @raise [ArgumentError] if given a class without the correct interface
     def response_parser= parser
       @response_parser = case parser
-      when Animoto::ResponseParser
+      when Animoto::ResponseParsers::Base
         parser
       when Class
         if %{format parse unparse}.all? { |m| parser.instance_methods.include? m }
@@ -103,7 +108,7 @@ module Animoto
           raise ArgumentError
         end
       else
-        Animoto::ResponseParser[parser].new
+        Animoto::ResponseParsers[parser].new
       end
     end
     
@@ -123,7 +128,7 @@ module Animoto
     # @param [Hash] options
     # @return [DirectingJob] a job to monitor the status of the directing
     def direct! manifest, options = {}
-      DirectingJob.load(send_manifest(manifest, DirectingJob.endpoint, options))
+      Resources::Jobs::DirectingJob.load(send_manifest(manifest, Resources::Jobs::DirectingJob.endpoint, options))
     end
     
     # Sends a request to start rendering a video.
@@ -132,7 +137,7 @@ module Animoto
     # @param [Hash] options
     # @return [RenderingJob] a job to monitor the status of the rendering
     def render! manifest, options = {}
-      RenderingJob.load(send_manifest(manifest, RenderingJob.endpoint, options))
+      Resources::Jobs::RenderingJob.load(send_manifest(manifest, Resources::Jobs::RenderingJob.endpoint, options))
     end
     
     # Sends a request to start directing and rendering a video.
@@ -141,7 +146,7 @@ module Animoto
     # @param [Hash] options
     # @return [DirectingAndRenderingJob] a job to monitor the status of the directing and rendering
     def direct_and_render! manifest, options = {}
-      DirectingAndRenderingJob.load(send_manifest(manifest, DirectingAndRenderingJob.endpoint, options))
+      Resources::Jobs::DirectingAndRenderingJob.load(send_manifest(manifest, Resources::Jobs::DirectingAndRenderingJob.endpoint, options))
     end
     
     # Update a resource with the latest attributes. Useful to update the state of a Job to

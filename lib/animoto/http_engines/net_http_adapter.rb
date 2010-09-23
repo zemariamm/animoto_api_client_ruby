@@ -2,8 +2,8 @@ require 'net/http'
 require 'net/https'
 
 module Animoto
-  class HTTPEngine
-    class NetHTTPAdapter < Animoto::HTTPEngine
+  module HTTPEngines
+    class NetHTTPAdapter < Animoto::HTTPEngines::Base
       
       HTTP_METHOD_MAP   = {
         :get  => Net::HTTP::Get,

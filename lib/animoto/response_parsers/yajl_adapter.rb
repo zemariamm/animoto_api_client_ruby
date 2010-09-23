@@ -1,19 +1,18 @@
 require 'yajl'
 
 module Animoto
-  class ResponseParser
-    class YajlAdapter < Animoto::ResponseParser
+  module ResponseParsers
+    class YajlAdapter < Animoto::ResponseParsers::Base
       
       @format = 'json'
       
-      def parse body
-        ::Yajl::Parser.parse body
+      def parse string
+        ::Yajl::Parser.parse string
       end
       
-      def unparse hash
-        ::Yajl::Encoder.encode hash
-      end
-      
+      def unparse object
+        ::Yajl::Encoder.encode object
+      end      
     end
     
     adapter_map.merge! :yajl => YajlAdapter

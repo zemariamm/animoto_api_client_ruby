@@ -119,29 +119,29 @@ describe Animoto::Client do
     end
     
     it "should make a GET request to the given url" do
-      client.find(Animoto::Storyboard, @url)
+      client.find(Animoto::Resources::Storyboard, @url)
       WebMock.should have_requested(:get, @url)
     end
     
     it "should ask for a response in the proper format" do
-      client.find(Animoto::Storyboard, @url)
+      client.find(Animoto::Resources::Storyboard, @url)
       WebMock.should have_requested(:get, @url).with(:headers => { 'Accept' => "application/vnd.animoto.storyboard-v1+json" })
     end
     
     it "should not sent a request body" do
-      client.find(Animoto::Storyboard, @url)
+      client.find(Animoto::Resources::Storyboard, @url)
       WebMock.should have_requested(:get, @url).with(:body => "")
     end
     
     it "should return an instance of the correct resource type" do
-      client.find(Animoto::Storyboard, @url).should be_an_instance_of(Animoto::Storyboard)
+      client.find(Animoto::Resources::Storyboard, @url).should be_an_instance_of(Animoto::Resources::Storyboard)
     end    
   end
   
   describe "reloading an instance" do
     before do
       @url = 'https://joe:secret@api.animoto.com/jobs/directing/1'
-      @job = Animoto::DirectingJob.new :state => 'initial', :url => @url
+      @job = Animoto::Resources::Jobs::Directing.new :state => 'initial', :url => @url
       hash = {'response'=>{'status'=>{'code'=>200},'payload'=>{'directing_job'=>{'state'=>'retrieving_assets','links'=>{'self'=>@url,'storyboard'=>'http://api.animoto.com/storyboards/1'}}}}}
       body = client.response_parser.unparse(hash)
       stub_request(:get, @url).to_return(:body => body, :status => [200,"OK"])

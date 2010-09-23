@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Animoto::ResponseParser::JSONAdapter do
+describe Animoto::ResponseParsers::JSONAdapter do
   
   before do
-    @parser = Animoto::ResponseParser::JSONAdapter.new
+    @parser = Animoto::ResponseParsers::JSONAdapter.new
   end
   
   it "should be JSON format" do

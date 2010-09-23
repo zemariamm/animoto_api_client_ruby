@@ -1,8 +1,8 @@
 require 'restclient'
 
 module Animoto
-  class HTTPEngine
-    class RestClientAdapter < Animoto::HTTPEngine
+  module HTTPEngines
+    class RestClientAdapter < Animoto::HTTPEngines::Base
       
       def request method, url, body = nil, headers = {}, options = {}
         response = ::RestClient::Request.execute({
@@ -17,7 +17,6 @@ module Animoto
         check_response response.code, response.body
         response.body
       end
-      
     end
     
     adapter_map.merge! :rest_client => RestClientAdapter

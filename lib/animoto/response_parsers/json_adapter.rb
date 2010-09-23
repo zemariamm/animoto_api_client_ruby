@@ -1,19 +1,18 @@
 require 'json'
 
 module Animoto
-  class ResponseParser
-    class JSONAdapter < Animoto::ResponseParser
+  module ResponseParsers
+    class JSONAdapter < Animoto::ResponseParsers::Base
       
       @format = 'json'
       
-      def parse body
-        ::JSON.parse body
+      def parse string
+        ::JSON.parse string
       end
       
-      def unparse hash
-        ::JSON.unparse hash
+      def unparse object
+        ::JSON.unparse object
       end
-      
     end
     
     adapter_map.merge! :json => JSONAdapter

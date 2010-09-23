@@ -100,7 +100,7 @@ client and using HTTP callbacks for status updates.
     # create a directing and rendering manifest with the video title and 
     # producer.  Also include rendering parameters like resolution, framerate,
     # and format.
-    manifest = DirectingAndRenderingManifest.new(
+    manifest = Manifests::DirectingAndRendering.new(
       :title => "Amazing Title!", 
       :producer => "Fishy Joe", 
       :resolution => "720p", 
@@ -109,13 +109,13 @@ client and using HTTP callbacks for status updates.
     )
     
     # Add some images, text, and footage to our manifest.
-    manifest << Image.new("http://website.com/picture.png")
-    manifest << Image.new("http://website.com/hooray.png", :spotlit => true)
-    manifest << TitleCard.new("Woohoo!", "Hooray for everything!")
-    manifest << Footage.new("http://website.com/movie.mp4", :duration => 3.5)
+    manifest << Assets::Image.new("http://website.com/picture.png")
+    manifest << Assets::Image.new("http://website.com/hooray.png", :spotlit => true)
+    manifest << Assets::TitleCard.new("Woohoo!", "Hooray for everything!")
+    manifest << Assets::Footage.new("http://website.com/movie.mp4", :duration => 3.5)
     
     # Setup the soundtrack.
-    manifest << Song.new("http://website.com/song.mp3", :artist => "Fishy Joe")
+    manifest << Assets::Song.new("http://website.com/song.mp3", :artist => "Fishy Joe")
     
     # Setup to get http callbacks for status notification (see below for 
     # polling example).
@@ -141,16 +141,16 @@ status.
 
     # Create a directing manifest.  The directing manifest controls the images
     # and other visual elements that will be in our final video.
-    manifest = DirectingManifest.new(:title => "Amazing Title!")
+    manifest = Manifets::Directing.new(:title => "Amazing Title!")
     
     # Add some images, text, and footage to our manifest.
-    manifest << Image.new("http://website.com/picture.png")
-    manifest << Image.new("http://website.com/hooray.png", :spotlit => true)
-    manifest << TitleCard.new("Woohoo!", "Hooray for everything!")
-    manifest << Footage.new("http://website.com/movie.mp4", :duration => 3.5)
+    manifest << Assets::Image.new("http://website.com/picture.png")
+    manifest << Assets::Image.new("http://website.com/hooray.png", :spotlit => true)
+    manifest << Assets::TitleCard.new("Woohoo!", "Hooray for everything!")
+    manifest << Assets::Footage.new("http://website.com/movie.mp4", :duration => 3.5)
     
     # Setup the soundtrack.
-    manifest << Song.new("http://website.com/song.mp3")
+    manifest << Assets::Song.new("http://website.com/song.mp3")
 
     # Request a new directing job by sending the API our directing manifest.
     directing_job = client.direct!(manifest)
@@ -167,7 +167,7 @@ status.
     
       # Now it's time to render the storyboard into a video.  First we create
       # a rendering manifest.
-    	manifest = RenderingManifest.new(storyboard, :resolution => "720p", :framerate => 24, :format => 'h264')
+    	manifest = Manifests::Rendering.new(storyboard, :resolution => "720p", :framerate => 24, :format => 'h264')
     	
     	# Send the manifest to the API.
     	rendering_job = client.render!(manifest)

@@ -1,8 +1,8 @@
 require 'typhoeus'
 
 module Animoto
-  class HTTPEngine
-    class TyphoeusAdapter < Animoto::HTTPEngine
+  module HTTPEngines
+    class TyphoeusAdapter < Animoto::HTTPEngines::Base
       
       def request method, url, body = nil, headers = {}, options = {}
         response = ::Typhoeus::Request.run(url, {
@@ -15,8 +15,7 @@ module Animoto
         })
         check_response response.code, response.body
         response.body
-      end
-      
+      end   
     end
     
     adapter_map.merge! :typhoeus => TyphoeusAdapter
