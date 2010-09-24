@@ -33,7 +33,7 @@ raise "Example code not found in README (expected at xpath '#{example_code_path}
 code = code_node.text
 
 puts "Replacing example credentials with valid ones"
-code.sub!(/Client\.new\(.+\)/, %Q{Client.new("#{credentials[:key]}","#{credentials[:secret]}")})
+code.sub!(/Client\.new\(.+\)/, %Q{Client.new("#{credentials[:key]}","#{credentials[:secret]}",:endpoint => "#{credentials[:endpoint]}")})
 
 puts "Replacing example assets with valid ones"
 code.gsub!(/Image\.new\(.+\)/) { %Q{Image.new("#{assets[:images].shift}")} }
@@ -47,4 +47,3 @@ eval code
 
 puts
 puts "If you're seeing this, things should have worked fine!"
-puts "Enjoy your video at #{video.download_url}"
