@@ -35,7 +35,6 @@ require 'animoto/callbacks/rendering'
 
 require 'animoto/http_engines/base'
 require 'animoto/response_parsers/base'
-require 'animoto/response_parsers/abstract_xml_adapter'
 
 module Animoto
   class Client
