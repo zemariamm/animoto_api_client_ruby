@@ -35,14 +35,14 @@ This document does not cover the details of the Animoto API itself. For such inf
 
 You can install the Animoto API Ruby Client either through [RubyGems](http://rubygems.org):
 
-    gem install animoto -v 0.0.0.alpha8 --pre
+    gem install animoto -v 0.1.0.alpha0 --pre
 
 Or by cloning [the repository](http://github.com/animoto/animoto_api_client_ruby) on [GitHub](http://github.com/) and building it from source:
 
     git clone git://github.com/animoto/animoto_api_client_ruby.git
     cd animoto_api_client_ruby
     gem build animoto.gemspec
-    gem install animoto-0.0.0.alpha8.gem
+    gem install animoto-0.1.0.alpha0.gem
 
 ### Prerequisites
 
@@ -141,7 +141,7 @@ status.
 
     # Create a directing manifest.  The directing manifest controls the images
     # and other visual elements that will be in our final video.
-    manifest = Manifets::Directing.new(:title => "Amazing Title!")
+    manifest = Manifests::Directing.new(:title => "Amazing Title!")
     
     # Add some images, text, and footage to our manifest.
     manifest << Assets::Image.new("http://website.com/picture.png")
