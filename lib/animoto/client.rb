@@ -28,6 +28,11 @@ require 'animoto/manifests/directing'
 require 'animoto/manifests/directing_and_rendering'
 require 'animoto/manifests/rendering'
 
+require 'animoto/callbacks/base'
+require 'animoto/callbacks/directing'
+require 'animoto/callbacks/directing_and_rendering'
+require 'animoto/callbacks/rendering'
+
 require 'animoto/http_engines/base'
 require 'animoto/response_parsers/base'
 require 'animoto/response_parsers/abstract_xml_adapter'
@@ -67,12 +72,12 @@ module Animoto
     
     # Set the HTTP engine this client will use.
     # 
-    # @param [HTTPEngine, Symbol, Class] engine you may pass a
+    # @param [HTTPEngines::Base, Symbol, Class] engine you may pass a
     #   HTTPEngine instance to use, or the symbolic name of a adapter to use,
     #   or a Class whose instances respond to #request and return a String of
     #   the response body
-    # @see Animoto::HTTPEngine
-    # @return [HTTPEngine] the engine instance
+    # @see Animoto::HTTPEngines::Base
+    # @return [HTTPEngines::Base] the engine instance
     # @raise [ArgumentError] if given a class without the correct interface
     def http_engine= engine
       @http_engine = case engine
@@ -91,11 +96,11 @@ module Animoto
     
     # Set the response parser this client will use.
     # 
-    # @param [ResponseParser, Symbol, Class] parser you may pass a
+    # @param [ResponseParsers::Base, Symbol, Class] parser you may pass a
     #   ResponseParser instance to use, or the symbolic name of a adapter to use,
     #   or a Class whose instances respond to #parse, #unparse, and #format.
-    # @see Animoto::ResponseParser
-    # @return [ResponseParser] the parser instance
+    # @see Animoto::ResponseParsers::Base
+    # @return [ResponseParsers::Base] the parser instance
     # @raise [ArgumentError] if given a class without the correct interface
     def response_parser= parser
       @response_parser = case parser
@@ -114,37 +119,46 @@ module Animoto
     
     # Finds a resource by its URL.
     #
-    # @param [Class] klass the Resource class you're finding
+    # @param [Class] klass the resource class you're finding
     # @param [String] url the URL of the resource you want
     # @param [Hash] options
-    # @return [Resource] the Resource object found
+    # @return [Resources::Base] the resource object found
     def find klass, url, options = {}
       klass.load(find_request(klass, url, options))
     end
     
+    # Returns a callback object of the specified type given the callback body.
+    #
+    # @param [Class] klass the callback class
+    # @param [String] body the HTTP body of the callback
+    # @return [Callbacks::Base] the callback object
+    def process_callback klass, body
+      klass.new(response_parser.parse(body))
+    end
+    
     # Sends a request to start directing a storyboard.
     #
-    # @param [DirectingManifest] manifest the manifest to direct
+    # @param [Manifests::Directing] manifest the manifest to direct
     # @param [Hash] options
-    # @return [DirectingJob] a job to monitor the status of the directing
+    # @return [Jobs::Directing] a job to monitor the status of the directing
     def direct! manifest, options = {}
       Resources::Jobs::DirectingJob.load(send_manifest(manifest, Resources::Jobs::DirectingJob.endpoint, options))
     end
     
     # Sends a request to start rendering a video.
     #
-    # @param [RenderingManifest] manifest the manifest to render
+    # @param [Manifests::Rendering] manifest the manifest to render
     # @param [Hash] options
-    # @return [RenderingJob] a job to monitor the status of the rendering
+    # @return [Jobs::Rendering] a job to monitor the status of the rendering
     def render! manifest, options = {}
       Resources::Jobs::RenderingJob.load(send_manifest(manifest, Resources::Jobs::RenderingJob.endpoint, options))
     end
     
     # Sends a request to start directing and rendering a video.
     #
-    # @param [DirectingAndRenderingManifest] manifest the manifest to direct and render
+    # @param [Manifests::DirectingAndRendering] manifest the manifest to direct and render
     # @param [Hash] options
-    # @return [DirectingAndRenderingJob] a job to monitor the status of the directing and rendering
+    # @return [Jobs::DirectingAndRendering] a job to monitor the status of the directing and rendering
     def direct_and_render! manifest, options = {}
       Resources::Jobs::DirectingAndRenderingJob.load(send_manifest(manifest, Resources::Jobs::DirectingAndRenderingJob.endpoint, options))
     end
@@ -152,9 +166,9 @@ module Animoto
     # Update a resource with the latest attributes. Useful to update the state of a Job to
     # see if it's ready if you are not using HTTP callbacks.
     #
-    # @param [Resource] resource the resource to update
+    # @param [Resources::Base] resource the resource to update
     # @param [Hash] options
-    # @return [Resource] the given resource with the latest attributes
+    # @return [Resources::Base] the given resource with the latest attributes
     def reload! resource, options = {}
       resource.load(find_request(resource.class, resource.url, options))
     end
@@ -196,7 +210,7 @@ module Animoto
     
     # Builds a request requiring a manifest.
     #
-    # @param [Manifest] manifest the manifest being acted on
+    # @param [Manifests::Base] manifest the manifest being acted on
     # @param [String] endpoint the endpoint to send the request to
     # @param [Hash] options
     # @return [Hash] deserialized response body
@@ -250,7 +264,7 @@ module Animoto
     end
     
     # Creates the full content type string given a Resource class or instance
-    # @param [Class,ContentType] klass_or_instance the class or instance to build the
+    # @param [Class,Support::ContentType] klass_or_instance the class or instance to build the
     #   content type for
     # @return [String] the full content type with the version and format included (i.e.
     #   "application/vnd.animoto.storyboard-v1+json")
