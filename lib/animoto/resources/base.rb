@@ -1,7 +1,6 @@
 module Animoto
   module Resources
     class Base
-      include Support::ContentType
       include Support::StandardEnvelope
     
       # @overload endpoint(path)
@@ -27,30 +26,6 @@ module Animoto
         self.class.endpoint
       end
 
-      # @overload payload_key(key)
-      #   Sets the payload key for this class. When building an instance of this class from
-      #   a response body, the payload key determines which object in the response payload
-      #   holds the attributes for the instance.
-      #
-      #   @param [String] key the key to set
-      #   @return [String] the key
-      #   
-      # @overload payload_key()
-      #   Returns the payload key for this class.
-      #
-      #   @return [String] the key
-      def self.payload_key key = nil
-        @payload_key = key if key
-        @payload_key || infer_content_type
-      end
-
-      # Returns the payload key for this class.
-      #
-      # @return [String] the key
-      def payload_key
-        self.class.payload_key
-      end
-    
       # Makes a new instance of this class from a deserialized response body. Note that
       # it assumes the hash you're passing is structured correctly and does no format checking
       # at all, so if the hash is not in the "standard envelope", this method will most likely
