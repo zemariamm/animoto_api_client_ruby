@@ -141,7 +141,7 @@ module Animoto
     # @param [Hash] options
     # @return [Jobs::Directing] a job to monitor the status of the directing
     def direct! manifest, options = {}
-      Resources::Jobs::DirectingJob.load(send_manifest(manifest, Resources::Jobs::DirectingJob.endpoint, options))
+      Resources::Jobs::Directing.load(send_manifest(manifest, Resources::Jobs::Directing.endpoint, options))
     end
     
     # Sends a request to start rendering a video.
@@ -150,7 +150,7 @@ module Animoto
     # @param [Hash] options
     # @return [Jobs::Rendering] a job to monitor the status of the rendering
     def render! manifest, options = {}
-      Resources::Jobs::RenderingJob.load(send_manifest(manifest, Resources::Jobs::RenderingJob.endpoint, options))
+      Resources::Jobs::Rendering.load(send_manifest(manifest, Resources::Jobs::Rendering.endpoint, options))
     end
     
     # Sends a request to start directing and rendering a video.
@@ -159,7 +159,7 @@ module Animoto
     # @param [Hash] options
     # @return [Jobs::DirectingAndRendering] a job to monitor the status of the directing and rendering
     def direct_and_render! manifest, options = {}
-      Resources::Jobs::DirectingAndRenderingJob.load(send_manifest(manifest, Resources::Jobs::DirectingAndRenderingJob.endpoint, options))
+      Resources::Jobs::DirectingAndRendering.load(send_manifest(manifest, Resources::Jobs::DirectingAndRendering.endpoint, options))
     end
     
     # Update a resource with the latest attributes. Useful to update the state of a Job to
