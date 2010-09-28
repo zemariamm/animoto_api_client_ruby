@@ -1,6 +1,6 @@
 module Animoto
   module HTTPEngines
-    extend Support::DynamicClassLoader(binding)
+    extend Support::DynamicClassLoader(File.expand_path(File.dirname(__FILE__)))
     
     class Base
       # Make a request.

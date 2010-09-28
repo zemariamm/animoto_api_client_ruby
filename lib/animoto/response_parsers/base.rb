@@ -1,6 +1,7 @@
 module Animoto
   module ResponseParsers
-    extend Support::DynamicClassLoader(binding)
+    
+    extend Support::DynamicClassLoader(File.expand_path(File.dirname(__FILE__)))
     
     class Base
     
