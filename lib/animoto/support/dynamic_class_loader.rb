@@ -1,19 +1,19 @@
 module Animoto
   module Support
 
-    def self.DynamicClassLoader dummy_binding
-      self::DynamicClassLoader.instance_variable_set(:@carryover_dummy_binding, dummy_binding)
+    def self.DynamicClassLoader search_path
+      self::DynamicClassLoader.instance_variable_set(:@carryover_search_path, search_path)
       self::DynamicClassLoader
     end
 
     module DynamicClassLoader
 
       def self.extended base
-        if instance_variable_defined?(:@carryover_dummy_binding)
-          base.instance_variable_set(:@dummy_binding, @carryover_dummy_binding)
-          remove_instance_variable(:@carryover_dummy_binding)
+        if instance_variable_defined?(:@carryover_search_path)
+          base.instance_variable_set(:@dynamic_class_loader_search_path, @carryover_search_path)
+          remove_instance_variable(:@carryover_search_path)
         else
-          raise StandardError, "You must provide a binding when extending the DynamicClassLoader"
+          base.instance_variable_set(:@dynamic_class_loader_search_path, '.')
         end
       end
     
@@ -54,7 +54,7 @@ module Animoto
       end
       
       def base_search_path
-        eval "File.expand_path(File.dirname(__FILE__))", dummy_binding
+        @dynamic_class_loader_search_path
       end
 
       # Returns the path relative to this file where dynamically loaded files can be found.
