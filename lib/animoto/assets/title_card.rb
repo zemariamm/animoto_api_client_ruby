@@ -2,8 +2,14 @@ module Animoto
   module Assets
     class TitleCard
       include Support::Visual
-    
-      attr_accessor :title, :subtitle
+      
+      # The main text of this title card.
+      # @return [String]
+      attr_accessor :title
+      
+      # The secondary text of this title card.
+      # @return [String]
+      attr_accessor :subtitle
     
       # Creates a new TitleCard.
       #
@@ -15,7 +21,8 @@ module Animoto
     
       # Returns a representation of this TitleCard as a Hash.
       #
-      # @return [Hash] this TitleCard as a Hash
+      # @return [Hash<String,Object>] this TitleCard as a Hash
+      # @see Animoto::Support::Visual#to_hash
       def to_hash
         hash = super
         hash['h1'] = title

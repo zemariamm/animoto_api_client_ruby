@@ -19,7 +19,7 @@ module Animoto
     
       # Returns a representation of this visual as a Hash.
       #
-      # @return [Hash] this visual as a Hash
+      # @return [Hash<String,Object>] this visual as a Hash
       def to_hash
         hash = super rescue {}
         hash['cover'] = cover? unless @cover.nil?

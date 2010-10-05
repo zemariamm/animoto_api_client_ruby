@@ -5,6 +5,8 @@ module Animoto
     
         endpoint '/jobs/rendering'
 
+        # @return [Hash<Symbol,Object>]
+        # @see Animoto::Support::StandardEvelope::ClassMethods#unpack_standard_envelope
         def self.unpack_standard_envelope body
           super.merge({
             :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
@@ -12,8 +14,13 @@ module Animoto
           })
         end
     
-        attr_reader :storyboard, :storyboard_url, :video, :video_url
+        attr_reader :storyboard
+        attr_reader :storyboard_url
+        attr_reader :video
+        attr_reader :video_url
     
+        # @return [Jobs::Rendering]
+        # @see Animoto::Jobs::Base#instantiate
         def instantiate attributes = {}
           @storyboard_url = attributes[:storyboard_url]
           @storyboard = Animoto::Resources::Storyboard.new(:url => @storyboard_url) if @storyboard_url

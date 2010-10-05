@@ -4,6 +4,7 @@ module Animoto
   module HTTPEngines
     class TyphoeusAdapter < Animoto::HTTPEngines::Base
       
+      # @return [String]
       def request method, url, body = nil, headers = {}, options = {}
         response = ::Typhoeus::Request.run(url, {
           :method => method,

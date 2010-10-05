@@ -6,10 +6,12 @@ module Animoto
       
       @format = 'json'
       
+      # @return [Hash<String,Object>]
       def parse string
         ::JSON.parse string
       end
       
+      # @return [String]
       def unparse object
         ::JSON.unparse object
       end

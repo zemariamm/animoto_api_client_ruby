@@ -2,16 +2,43 @@ module Animoto
   module Manifests
     class Directing < Animoto::Manifests::Base
 
-      attr_accessor :title, :pacing, :http_callback_url, :http_callback_format
-      attr_reader   :visuals, :song, :style
+      # The title of the video project.
+      # @return [String]
+      attr_accessor :title
+      
+      # The pacing, representing how quickly the visuals elements will be cycled.
+      # Valid values are 'default', 'half', and 'double'.
+      # @return [String]
+      attr_accessor :pacing
+      
+      # A URL to receive a callback after directing is finished.
+      # @return [String]
+      attr_accessor :http_callback_url
+      
+      # The format of the callback; either 'xml' or 'json'.
+      # @return [String]
+      attr_accessor :http_callback_format
 
-      # Creates a new DirectingManifest.
+      # The array of Visual objects in this manifest.
+      # @return [Array<Support::Visual>]
+      attr_reader   :visuals
+      
+      # The song for this video.
+      # @return [Assets::Song]
+      attr_reader   :song
+      
+      # The 'style' for this video. Currently, the only style available is 'original'.
+      # @return [String]
+      attr_reader   :style
+
+      # Creates a new directing manifest.
       #
       # @param [Hash] options
       # @option options [String] :title the title of this project
-      # @option options ['default','half','double'] :pacing ('default') the pacing for this project
+      # @option options [String] :pacing ('default') the pacing for this project
       # @option options [String] :http_callback_url a URL to receive a callback when this job is done
-      # @option options ['json','xml'] :http_callback_format the format of the callback
+      # @option options [String] :http_callback_format the format of the callback
+      # @return [Manifests::Directing] the manifest
       def initialize options = {}
         @title      = options[:title]
         @pacing     = options[:pacing] || 'default'
@@ -24,8 +51,9 @@ module Animoto
 
       # Adds a TitleCard to this manifest.
       #
-      # @see TitleCard
-      # @return [TitleCard] the new TitleCard
+      # @param [Array<Object>] args arguments sent to the initializer for the TitleCard
+      # @return [Assets::TitleCard] the new TitleCard
+      # @see Animoto::Assets::TitleCard#initialize
       def add_title_card *args
         card = Assets::TitleCard.new *args
         @visuals << card
@@ -34,8 +62,9 @@ module Animoto
     
       # Adds an Image to this manifest.
       #
-      # @see Image
-      # @return [Image] the new Image
+      # @param [Array<Object>] args arguments sent to the initializer for the Image
+      # @return [Assets::Image] the new Image
+      # @see Animoto::Assets::Image#initialize
       def add_image *args
         image = Assets::Image.new *args
         @visuals << image
@@ -44,8 +73,9 @@ module Animoto
     
       # Adds Footage to this manifest.
       #
-      # @see Footage
-      # @return [Footage] the new Footage
+      # @param [Array<Object>] args arguments sent to the initializer for the Footage
+      # @return [Assets::Footage] the new Footage
+      # @see Animoto::Assets::Footage#initialize
       def add_footage *args
         footage = Assets::Footage.new *args
         @visuals << footage
@@ -55,15 +85,17 @@ module Animoto
       # Adds a Song to this manifest. Right now, a manifest can only have one song. Adding
       # a second replaces the first.
       #
-      # @see Song
-      # @return [Song] the new Song
+      # @param [Array<Object>] args arguments sent to the initializer for the Song
+      # @return [Assets::Song] the new Song
+      # @see Animoto::Assets::Song#initialize
       def add_song *args
         @song = Assets::Song.new *args
       end
 
       # Adds a visual/song to this manifest.
       #
-      # @param [Visual,Song] asset the asset to add
+      # @param [Support::Visual,Assets::Song] asset the asset to add
+      # @return [void]
       # @raise [ArgumentError] if the asset isn't a Song or Visual
       def add_visual asset
         case asset
@@ -78,7 +110,7 @@ module Animoto
 
       # Adds a visual/song to this manifest.
       #
-      # @param [Visual,Song] asset the asset to add
+      # @param [Support::Visual,Assets::Song] asset the asset to add
       # @return [self]
       def << asset
         add_visual asset
@@ -87,7 +119,7 @@ module Animoto
 
       # Returns a representation of this manifest as a Hash.
       #
-      # @return [Hash] the manifest as a Hash
+      # @return [Hash<String,String>] the manifest as a Hash
       # @raise [ArgumentError] if a callback URL is specified but not the format
       def to_hash options = {}
         hash = { 'directing_job' => { 'directing_manifest' => {} } }

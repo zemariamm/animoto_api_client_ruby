@@ -5,11 +5,13 @@ module Animoto
   module HTTPEngines
     class NetHTTPAdapter < Animoto::HTTPEngines::Base
       
+      # A map of HTTP verb symbols to the Net::HTTP classes that handle them.
       HTTP_METHOD_MAP   = {
         :get  => Net::HTTP::Get,
         :post => Net::HTTP::Post
       }
       
+      # @return [String]
       def request method, url, body = nil, headers = {}, options = {}
         uri = URI.parse(url)
         http = build_http uri
@@ -36,10 +38,10 @@ module Animoto
       #
       # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
       # @param [String] uri the request path
-      # @param [String, nil] body the request body
+      # @param [String,nil] body the request body
       # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
       #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
-      # @param [Hash] options
+      # @param [Hash<Symbol,Object>] options
       # @return [Net::HTTPRequest] the request object
       def build_request method, uri, body, headers, options
         req = HTTP_METHOD_MAP[method].new uri.path

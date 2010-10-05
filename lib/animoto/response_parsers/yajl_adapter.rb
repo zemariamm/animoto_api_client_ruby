@@ -6,10 +6,12 @@ module Animoto
       
       @format = 'json'
       
+      # @return [Hash<String,Object>]
       def parse string
         ::Yajl::Parser.parse string
       end
       
+      # @return [String]
       def unparse object
         ::Yajl::Encoder.encode object
       end      

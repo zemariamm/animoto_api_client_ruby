@@ -2,6 +2,8 @@ module Animoto
   module Support
     module StandardEnvelope
     
+      # When included into a class, also extends ClassMethods, inludes InstanceMethods, and
+      # includes Support::ContentType
       def self.included base
         base.class_eval {
           include Animoto::Support::StandardEnvelope::InstanceMethods
@@ -11,11 +13,15 @@ module Animoto
       end
     
       module InstanceMethods
+        # Calls the class-level unpack_standard_envelope method.
+        # @return [Hash<Symbol,Object>]
+        # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
         def unpack_standard_envelope body = {}
           self.class.unpack_standard_envelope body
         end
 
-        # Returns the payload key for this class.
+        # Returns the payload key for this class, i.e. the name of the key inside the 'payload'
+        # object of the standard envelope where this resource's information is.
         #
         # @return [String] the key
         def payload_key
@@ -43,6 +49,11 @@ module Animoto
 
         protected        
 
+        # Extracts common elements from the 'standard envelope' and returns them in a
+        # easier-to-work-with hash.
+        #
+        # @param [Hash<String,Object>] body the body, structured in the 'standard envelope'
+        # @return [Hash<Symbol,Object>] the nicer hash
         def unpack_standard_envelope body = {}
           {
             :url => body['response']['payload'][payload_key]['links']['self'],

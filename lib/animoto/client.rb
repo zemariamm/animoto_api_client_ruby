@@ -42,8 +42,54 @@ module Animoto
     API_VERSION       = 1
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     
-    attr_accessor :key, :secret, :endpoint, :logger
-    attr_reader :http_engine, :response_parser
+    # Your API key.
+    # @return [String]
+    attr_accessor :key
+    
+    # Your API secret.
+    # @return [String]
+    attr_accessor :secret
+    
+    # The base URL where all requests will be sent.
+    # @return [String]
+    attr_accessor :endpoint
+    
+    # A logger.
+    # @return [Logger]
+    attr_accessor :logger
+    
+    # The engine to handle HTTP requests.
+    # @return [HTTPEngines::Base]
+    # @overload http_engine
+    #   Returns the HTTP engine.
+    #   @return [HTTPEngines::Base]
+    # @overload http_engine=(engine)
+    #   Sets the HTTP engine.
+    #   
+    #   @param [HTTPEngines::Base,Symbol,Class] engine you may pass a
+    #     HTTPEngine instance to use, or the symbolic name of an adapter to use,
+    #     or a Class whose instances respond to #request and return a String of
+    #     the response body
+    #   @see Animoto::HTTPEngines::Base
+    #   @return [HTTPEngines::Base] the engine instance
+    #   @raise [ArgumentError] if given a class without the correct interface
+    attr_reader :http_engine
+    
+    # The engine to handle parsing XML or JSON responses.
+    # @return [ResponseParsers::Base]
+    # @overload response_parser
+    #   Returns the parser.
+    #   @return [ResponseParsers::Base]
+    # @overload response_parser=(parser)
+    #   Sets the parser.
+    #   
+    #   @param [ResponseParsers::Base,Symbol,Class] parser you may pass a
+    #     ResponseParser instance to use, or the symbolic name of an adapter to use,
+    #     or a Class whose instances respond to #parse, #unparse, and #format.
+    #   @see Animoto::ResponseParsers::Base
+    #   @return [ResponseParsers::Base] the parser instance
+    #   @raise [ArgumentError] if given a class without the correct interface
+    attr_reader :response_parser
     
     # Creates a new Client object which handles credentials, versioning, making requests, and
     # parsing responses.
@@ -69,15 +115,6 @@ module Animoto
       __send__ :response_parser=, options[:response_parser] || :json
     end
     
-    # Set the HTTP engine this client will use.
-    # 
-    # @param [HTTPEngines::Base, Symbol, Class] engine you may pass a
-    #   HTTPEngine instance to use, or the symbolic name of a adapter to use,
-    #   or a Class whose instances respond to #request and return a String of
-    #   the response body
-    # @see Animoto::HTTPEngines::Base
-    # @return [HTTPEngines::Base] the engine instance
-    # @raise [ArgumentError] if given a class without the correct interface
     def http_engine= engine
       @http_engine = case engine
       when Animoto::HTTPEngines::Base
@@ -93,14 +130,6 @@ module Animoto
       end
     end
     
-    # Set the response parser this client will use.
-    # 
-    # @param [ResponseParsers::Base, Symbol, Class] parser you may pass a
-    #   ResponseParser instance to use, or the symbolic name of a adapter to use,
-    #   or a Class whose instances respond to #parse, #unparse, and #format.
-    # @see Animoto::ResponseParsers::Base
-    # @return [ResponseParsers::Base] the parser instance
-    # @raise [ArgumentError] if given a class without the correct interface
     def response_parser= parser
       @response_parser = case parser
       when Animoto::ResponseParsers::Base
@@ -120,7 +149,7 @@ module Animoto
     #
     # @param [Class] klass the resource class you're finding
     # @param [String] url the URL of the resource you want
-    # @param [Hash] options
+    # @param [Hash<Symbol,Object>] options
     # @return [Resources::Base] the resource object found
     def find klass, url, options = {}
       klass.load(find_request(klass, url, options))
@@ -138,7 +167,7 @@ module Animoto
     # Sends a request to start directing a storyboard.
     #
     # @param [Manifests::Directing] manifest the manifest to direct
-    # @param [Hash] options
+    # @param [Hash<Symbol,Object>] options
     # @return [Jobs::Directing] a job to monitor the status of the directing
     def direct! manifest, options = {}
       Resources::Jobs::Directing.load(send_manifest(manifest, Resources::Jobs::Directing.endpoint, options))
@@ -147,7 +176,7 @@ module Animoto
     # Sends a request to start rendering a video.
     #
     # @param [Manifests::Rendering] manifest the manifest to render
-    # @param [Hash] options
+    # @param [Hash<Symbol,Object>] options
     # @return [Jobs::Rendering] a job to monitor the status of the rendering
     def render! manifest, options = {}
       Resources::Jobs::Rendering.load(send_manifest(manifest, Resources::Jobs::Rendering.endpoint, options))
@@ -156,7 +185,7 @@ module Animoto
     # Sends a request to start directing and rendering a video.
     #
     # @param [Manifests::DirectingAndRendering] manifest the manifest to direct and render
-    # @param [Hash] options
+    # @param [Hash<Symbol,Object>] options
     # @return [Jobs::DirectingAndRendering] a job to monitor the status of the directing and rendering
     def direct_and_render! manifest, options = {}
       Resources::Jobs::DirectingAndRendering.load(send_manifest(manifest, Resources::Jobs::DirectingAndRendering.endpoint, options))
@@ -166,7 +195,7 @@ module Animoto
     # see if it's ready if you are not using HTTP callbacks.
     #
     # @param [Resources::Base] resource the resource to update
-    # @param [Hash] options
+    # @param [Hash<Symbol,Object>] options
     # @return [Resources::Base] the given resource with the latest attributes
     def reload! resource, options = {}
       resource.load(find_request(resource.class, resource.url, options))
@@ -177,6 +206,7 @@ module Animoto
     # Sets the API credentials from an .animotorc file. First looks for one in the current
     # directory, then checks ~/.animotorc, then finally /etc/.animotorc.
     #
+    # @return [void]
     # @raise [ArgumentError] if none of the files are found
     def configure_from_rc_file
       current_path = Dir.pwd + '/.animotorc'
@@ -201,8 +231,8 @@ module Animoto
     #
     # @param [Class] klass the Resource class you're looking for
     # @param [String] url the URL of the resource
-    # @param [Hash] options
-    # @return [Hash] deserialized response body
+    # @param [Hash<Symbol,Object>] options
+    # @return [Hash<String,Object>] deserialized response body
     def find_request klass, url, options = {}
       request(:get, url, nil, { "Accept" => content_type_of(klass) }, options)
     end
@@ -211,8 +241,8 @@ module Animoto
     #
     # @param [Manifests::Base] manifest the manifest being acted on
     # @param [String] endpoint the endpoint to send the request to
-    # @param [Hash] options
-    # @return [Hash] deserialized response body
+    # @param [Hash<Symbol,Object>] options
+    # @return [Hash<String,Object>] deserialized response body
     def send_manifest manifest, endpoint, options = {}
       u = URI.parse(self.endpoint)
       u.path = endpoint
@@ -229,11 +259,11 @@ module Animoto
     #
     # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
     # @param [String] url the URL of the request
-    # @param [String, nil] body the request body
+    # @param [String,nil] body the request body
     # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
     #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
-    # @param [Hash] options
-    # @return [Hash] deserialized response body
+    # @param [Hash<Symbol,Object>] options
+    # @return [Hash<String,Object>] deserialized response body
     # @raise [Error]
     def request method, url, body, headers = {}, options = {}
       code, body = catch(:fail) do

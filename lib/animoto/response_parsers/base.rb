@@ -1,8 +1,8 @@
 module Animoto
-  module ResponseParsers
-    
+  module ResponseParsers    
     extend Support::DynamicClassLoader(File.expand_path(File.dirname(__FILE__)))
     
+    # @abstract Override {#parse} and {#unparse} to subclass.
     class Base
     
       # Returns the format of this parser class.
@@ -21,8 +21,9 @@ module Animoto
     
       # Parses a response body into a usable Hash.
       #
+      # @abstract
       # @param [String] body the HTTP response body
-      # @return [Hash] the parsed response
+      # @return [Hash<String,Object>] the parsed response
       # @raise [NotImplementedError] if called on the abstract class
       def parse body
         raise NotImplementedError
@@ -30,7 +31,8 @@ module Animoto
     
       # Serializes a Hash into the format for this parser.
       #
-      # @param [Hash] hash the hash to serialize
+      # @abstract
+      # @param [Hash<Object,Object>] hash the hash to serialize
       # @return [String] the serialized data
       # @raise [NotImplementedError] if called on the abstract class
       def unparse hash
