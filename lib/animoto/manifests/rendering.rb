@@ -2,8 +2,8 @@ module Animoto
   module Manifests
     class Rendering < Animoto::Manifests::Base
     
-      # The vertical resolution of the rendered video. Valid values are '180p', '240p',
-      # '360p', '480p', '720p' or '1080p'.
+      # The vertical resolution of the rendered video. Valid values are '180p', '270p',
+      # '360p', '480p', '576p', '720p' or '1080p'.
       # @return [String]
       attr_accessor :resolution
       
