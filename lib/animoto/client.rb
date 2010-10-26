@@ -111,8 +111,8 @@ module Animoto
       @logger   = options[:logger] || ::Logger.new(STDOUT)
       configure_from_rc_file
       @endpoint ||= API_ENDPOINT
-      __send__ :http_engine=, options[:http_engine] || :net_http
-      __send__ :response_parser=, options[:response_parser] || :json
+      self.http_engine = options[:http_engine] || :net_http
+      self.response_parser= options[:response_parser] || :json
     end
     
     def http_engine= engine
