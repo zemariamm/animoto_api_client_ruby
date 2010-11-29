@@ -30,10 +30,11 @@ describe Animoto::Resources::Base do
                 'self' => @url
               },
               'metadata' => {
-                'duration' => 300,
-                'format' => 'h264',
-                'framerate' => 30,
-                'vertical_resolution' => "720p"
+                'rendering_parameters' => {
+                  'format' => 'h264',
+                  'framerate' => 30,
+                  'vertical_resolution' => "720p"                  
+                }
               }
             }
           }
@@ -46,10 +47,10 @@ describe Animoto::Resources::Base do
     end
     
     it "should update the original instance with the initialization parameters of the new one" do
-      @video.duration.should be_nil
+      @video.framerate.should be_nil
       video = Animoto::Resources::Video.load(@body)
-      video.duration.should == 300
-      @video.duration.should == 300
+      video.framerate.should == 30
+      @video.framerate.should == 30
     end
   end
 end
