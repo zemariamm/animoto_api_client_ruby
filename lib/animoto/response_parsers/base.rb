@@ -1,6 +1,11 @@
 module Animoto
   module ResponseParsers    
-    extend Support::DynamicClassLoader(File.expand_path(File.dirname(__FILE__)))
+    extend Support::DynamicClassLoader
+    
+    dynamic_class_path File.expand_path(File.dirname(__FILE__))
+    
+    adapter 'JSON'
+    adapter 'Yajl'
     
     # @abstract Override {#parse} and {#unparse} to subclass.
     class Base

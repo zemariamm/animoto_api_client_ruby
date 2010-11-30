@@ -1,7 +1,15 @@
 module Animoto
-  module HTTPEngines
-    extend Support::DynamicClassLoader(File.expand_path(File.dirname(__FILE__)))
+  module HTTPEngines    
+    extend Support::DynamicClassLoader
     
+    dynamic_class_path File.expand_path(File.dirname(__FILE__))
+    
+    adapter 'Curl'
+    adapter 'NetHTTP'
+    adapter 'Patron'
+    adapter 'RestClient'
+    adapter 'Typhoeus'
+        
     # @abstract Override {#request} to subclass.
     class Base
       
