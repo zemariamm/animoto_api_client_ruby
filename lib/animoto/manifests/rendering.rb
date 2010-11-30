@@ -37,8 +37,9 @@ module Animoto
       # @option options [String] :http_callback_url a URL to receive a callback when this job is done
       # @option options [String] :http_callback_format the format of the callback
       # @return [Manifests::Rendering] the manifest
-      def initialize storyboard, options = {}
-        @storyboard = storyboard
+      def initialize *args
+        options = args.last.is_a?(Hash) ? args.pop : {}
+        @storyboard = args.shift
         @resolution = options[:resolution]
         @framerate  = options[:framerate]
         @format     = options[:format]
@@ -59,7 +60,7 @@ module Animoto
           job['http_callback_format'] = http_callback_format
         end
         manifest = job['rendering_manifest']
-        manifest['storyboard_url'] = storyboard.url
+        manifest['storyboard_url'] = storyboard.url if storyboard
         params = manifest['rendering_parameters']
         params['resolution'] = resolution
         params['framerate'] = framerate
