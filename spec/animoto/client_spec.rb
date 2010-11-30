@@ -152,29 +152,5 @@ describe Animoto::Client do
       client.reload!(@job)
       @job.state.should == 'retrieving_assets'
     end
-  end
-  
-  describe "processing a callback" do
-    before do
-      @body = %Q({"response":{"payload":{"base_callback":{"state":"failed","links":{"self":"https://api.animoto.com/things/123"}}},"status":{"errors":[{"code":"COLLAPSING_HRUNG_DISASTER","message":"A hrung has chosen to collapse disastrously."},{"code":"TOTAL_EXISTENCE_FAILURE","message":"The server is suffering from Total Existence Failure."}]}}})
-      @callback = client.process_callback(Animoto::Callbacks::Base, @body)
-    end
-    
-    it "should return a callback instance" do
-      @callback.should be_an_instance_of(Animoto::Callbacks::Base)
-    end
-    
-    it "should set the state" do
-      @callback.state.should == "failed"
-    end
-    
-    it "should set the url" do
-      @callback.url.should == "https://api.animoto.com/things/123"
-    end
-    
-    it "should set the errors" do
-      @callback.errors.should be_an_instance_of(Array)
-      @callback.errors.should_not be_empty
-    end
-  end
+  end  
 end

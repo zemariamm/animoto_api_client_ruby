@@ -151,16 +151,7 @@ module Animoto
     def find klass, url, options = {}
       klass.load(find_request(klass, url, options))
     end
-    
-    # Returns a callback object of the specified type given the callback body.
-    #
-    # @param [Class] klass the callback class
-    # @param [String] body the HTTP body of the callback
-    # @return [Callbacks::Base] the callback object
-    def process_callback klass, body
-      klass.new(response_parser.parse(body))
-    end
-    
+        
     # Sends a request to start directing a storyboard.
     #
     # @param [Manifests::Directing] manifest the manifest to direct
