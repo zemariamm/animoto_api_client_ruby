@@ -1,16 +1,22 @@
 module Animoto
   module Resources
     class Video < Animoto::Resources::Base
+
+      def self.unpack_rendering_parameters body
+        (unpack_payload(body)['metadata'] || {})['rendering_parameters']
+      end
     
       # @return [Hash<Symbol,Object>]
       # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
       def self.unpack_standard_envelope body
+        links = unpack_links(body)
+        params = unpack_rendering_parameters(body)
         super.merge({
-          :download_url => body['response']['payload'][payload_key]['links']['file'],
-          :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
-          :format     => body['response']['payload'][payload_key]['metadata']['rendering_parameters']['format'],
-          :framerate  => body['response']['payload'][payload_key]['metadata']['rendering_parameters']['framerate'],
-          :resolution => body['response']['payload'][payload_key]['metadata']['rendering_parameters']['resolution']
+          :download_url   => links['file'],
+          :storyboard_url => links['storyboard'],
+          :format         => params['format'],
+          :framerate      => params['framerate'],
+          :resolution     => params['resolution']
         })
       end
 

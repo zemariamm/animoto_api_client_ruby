@@ -7,7 +7,7 @@ module Animoto
         
         # @return [Hash<Symbol,Object>]
         def self.unpack_standard_envelope body
-          super.merge(:state => body['response']['payload'][payload_key]['state'])
+          super.merge(:state => unpack_payload(body)['state'])
         end
         
         # @return [String]

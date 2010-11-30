@@ -8,7 +8,7 @@ module Animoto
         # @return [Hash<Symbol,Object>]
         # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
         def self.unpack_standard_envelope body
-          super.merge(:storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'])
+          super.merge(:storyboard_url => unpack_links(body)['storyboard'])
         end
     
         attr_reader :storyboard

@@ -2,13 +2,18 @@ module Animoto
   module Resources
     class Storyboard < Animoto::Resources::Base
       
+      def self.unpack_metadata body = {}
+        unpack_payload(body)['metadata'] || {}
+      end
+      
       # @return [Hash<Symbol,Object>]
       # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
       def self.unpack_standard_envelope body = {}
+        metadata = unpack_metadata(body)
         super.merge({
-          :duration => body['response']['payload'][payload_key]['metadata']['duration'],
-          :visuals_count => body['response']['payload'][payload_key]['metadata']['visuals_count'],
-          :preview_url => body['response']['payload'][payload_key]['links']['preview']
+          :duration       => metadata['duration'],
+          :visuals_count  => metadata['visuals_count'],
+          :preview_url    => unpack_links(body)['preview']
         })
       end
     

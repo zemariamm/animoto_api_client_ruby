@@ -8,9 +8,10 @@ module Animoto
         # @return [Hash<Symbol,Object>]
         # @see Animoto::Support::StandardEvelope::ClassMethods#unpack_standard_envelope
         def self.unpack_standard_envelope body
+          links = unpack_links(body)
           super.merge({
-            :storyboard_url => body['response']['payload'][payload_key]['links']['storyboard'],
-            :video_url      => body['response']['payload'][payload_key]['links']['video']
+            :storyboard_url => links['storyboard'],
+            :video_url      => links['video']
           })
         end
     
