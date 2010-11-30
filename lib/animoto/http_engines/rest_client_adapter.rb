@@ -18,8 +18,6 @@ module Animoto
         check_response response.code, response.body
         response.body
       end
-    end
-    
-    adapter_map.merge! :rest_client => RestClientAdapter
+    end    
   end
 end

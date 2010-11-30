@@ -44,8 +44,6 @@ module Animoto
           curl.http_post(body)
         end
       end
-    end
-    
-    adapter_map.merge! :curl => CurlAdapter
+    end    
   end
 end

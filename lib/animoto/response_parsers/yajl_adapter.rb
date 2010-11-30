@@ -15,8 +15,6 @@ module Animoto
       def unparse object
         ::Yajl::Encoder.encode object
       end      
-    end
-    
-    adapter_map.merge! :yajl => YajlAdapter
+    end    
   end
 end

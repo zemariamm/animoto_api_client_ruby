@@ -50,8 +50,6 @@ module Animoto
         req.basic_auth options[:username], options[:password]
         req
       end      
-    end
-    
-    adapter_map.merge! :net_http => NetHTTPAdapter
+    end    
   end
 end

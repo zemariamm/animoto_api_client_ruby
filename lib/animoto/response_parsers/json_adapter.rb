@@ -15,8 +15,6 @@ module Animoto
       def unparse object
         ::JSON.unparse object
       end
-    end
-    
-    adapter_map.merge! :json => JSONAdapter
+    end    
   end
 end

@@ -25,8 +25,6 @@ module Animoto
         session.password = options[:password]
         session
       end
-    end
-    
-    adapter_map.merge! :patron => PatronAdapter
+    end    
   end
 end
