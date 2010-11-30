@@ -5,20 +5,26 @@ module Animoto
     
         endpoint '/jobs/directing_and_rendering'
 
-        # @return [Hash<Symbol,Object>]
-        # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
-        def self.unpack_standard_envelope body
-          super.merge(:video_url => body['response']['payload'][payload_key]['links']['video'])
+        def self.unpack_standard_envelope body = {}
+          links = unpack_links(body)
+          super.merge({
+            :storyboard_url => links['storyboard'],
+            :video_url      => links['video']
+          })
         end
-    
-        attr_reader :video
+
+        attr_reader :storyboard_url
+        attr_reader :storyboard
         attr_reader :video_url
-    
+        attr_reader :video
+
         # @return [Jobs::DirectingAndRendering]
         # @see Animoto::Jobs::Base#instantiate
         def instantiate attributes = {}
-          @video_url = attributes[:video_url]
-          @video = Animoto::Resources::Video.new(:url => @video_url) if @video_url
+          @storyboard_url = attributes[:storyboard_url]
+          @storyboard     = Animoto::Resources::Storyboard.new(:url => @storyboard_url) if @storyboard_url
+          @video_url      = attributes[:video_url]
+          @video          = Animoto::Resources::Video.new(:url => @video_url) if @video_url
           super
         end
     
