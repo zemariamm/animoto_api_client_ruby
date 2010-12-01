@@ -19,7 +19,7 @@ module Animoto
 
       # Returns a representation of this Visual as a Hash
       #
-      # @return [Hash<String,Object>] this Visual as a Hash
+      # @return [Hash{String=>Object}] this Visual as a Hash
       def to_hash
         hash = super rescue {}
         hash['spotlit'] = spotlit? unless @spotlit.nil?

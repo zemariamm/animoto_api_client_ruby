@@ -35,8 +35,14 @@ require 'animoto/response_parsers/base'
 
 module Animoto
   class Client
+    
+    # The default endpoint where requests go.
     API_ENDPOINT      = "https://api2-sandbox.animoto.com/"
+    
+    # The version of the Animoto API this client targets.
     API_VERSION       = 1
+    
+    # The common prefix all vendor-specific Animoto content types share.
     BASE_CONTENT_TYPE = "application/vnd.animoto"
     
     # Your API key.
@@ -146,7 +152,7 @@ module Animoto
     #
     # @param [Class] klass the resource class you're finding
     # @param [String] url the URL of the resource you want
-    # @param [Hash<Symbol,Object>] options
+    # @param [Hash{Symbol=>Object}] options
     # @return [Resources::Base] the resource object found
     def find klass, url, options = {}
       klass.load(find_request(klass, url, options))
@@ -155,7 +161,7 @@ module Animoto
     # Sends a request to start directing a storyboard.
     #
     # @param [Manifests::Directing] manifest the manifest to direct
-    # @param [Hash<Symbol,Object>] options
+    # @param [Hash{Symbol=>Object}] options
     # @return [Jobs::Directing] a job to monitor the status of the directing
     def direct! manifest, options = {}
       Resources::Jobs::Directing.load(send_manifest(manifest, Resources::Jobs::Directing.endpoint, options))
@@ -164,7 +170,7 @@ module Animoto
     # Sends a request to start rendering a video.
     #
     # @param [Manifests::Rendering] manifest the manifest to render
-    # @param [Hash<Symbol,Object>] options
+    # @param [Hash{Symbol=>Object}] options
     # @return [Jobs::Rendering] a job to monitor the status of the rendering
     def render! manifest, options = {}
       Resources::Jobs::Rendering.load(send_manifest(manifest, Resources::Jobs::Rendering.endpoint, options))
@@ -173,7 +179,7 @@ module Animoto
     # Sends a request to start directing and rendering a video.
     #
     # @param [Manifests::DirectingAndRendering] manifest the manifest to direct and render
-    # @param [Hash<Symbol,Object>] options
+    # @param [Hash{Symbol=>Object}] options
     # @return [Jobs::DirectingAndRendering] a job to monitor the status of the directing and rendering
     def direct_and_render! manifest, options = {}
       Resources::Jobs::DirectingAndRendering.load(send_manifest(manifest, Resources::Jobs::DirectingAndRendering.endpoint, options))
@@ -183,7 +189,7 @@ module Animoto
     # see if it's ready if you are not using HTTP callbacks.
     #
     # @param [Resources::Base] resource the resource to update
-    # @param [Hash<Symbol,Object>] options
+    # @param [Hash{Symbol=>Object}] options
     # @return [Resources::Base] the given resource with the latest attributes
     def reload! resource, options = {}
       resource.load(find_request(resource.class, resource.url, options))
@@ -219,8 +225,8 @@ module Animoto
     #
     # @param [Class] klass the Resource class you're looking for
     # @param [String] url the URL of the resource
-    # @param [Hash<Symbol,Object>] options
-    # @return [Hash<String,Object>] deserialized response body
+    # @param [Hash{Symbol=>Object}] options
+    # @return [Hash{String=>Object}] deserialized response body
     def find_request klass, url, options = {}
       request(:get, url, nil, { "Accept" => content_type_of(klass) }, options)
     end
@@ -229,8 +235,8 @@ module Animoto
     #
     # @param [Manifests::Base] manifest the manifest being acted on
     # @param [String] endpoint the endpoint to send the request to
-    # @param [Hash<Symbol,Object>] options
-    # @return [Hash<String,Object>] deserialized response body
+    # @param [Hash{Symbol=>Object}] options
+    # @return [Hash{String=>Object}] deserialized response body
     def send_manifest manifest, endpoint, options = {}
       u = URI.parse(self.endpoint)
       u.path = endpoint
@@ -248,10 +254,10 @@ module Animoto
     # @param [Symbol] method which HTTP method to use (should be lowercase, i.e. :get instead of :GET)
     # @param [String] url the URL of the request
     # @param [String,nil] body the request body
-    # @param [Hash<String,String>] headers the request headers (will be sent as-is, which means you should
+    # @param [Hash{String=>String}] headers the request headers (will be sent as-is, which means you should
     #   specify "Content-Type" => "..." instead of, say, :content_type => "...")
-    # @param [Hash<Symbol,Object>] options
-    # @return [Hash<String,Object>] deserialized response body
+    # @param [Hash{Symbol=>Object}] options
+    # @return [Hash{String=>Object}] deserialized response body
     # @raise [Error]
     def request method, url, body, headers = {}, options = {}
       code, body = catch(:fail) do

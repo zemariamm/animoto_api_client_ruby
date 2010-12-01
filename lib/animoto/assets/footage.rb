@@ -19,7 +19,7 @@ module Animoto
     
       # Returns a representation of this Footage as a Hash.
       #
-      # @return [Hash<String,Object>] this asset as a Hash
+      # @return [Hash{String=>Object}] this asset as a Hash
       # @see Animoto::Support::Visual#to_hash
       # @see Animoto::Assets::Base#to_hash
       def to_hash

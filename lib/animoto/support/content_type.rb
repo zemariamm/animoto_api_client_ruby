@@ -4,6 +4,7 @@ module Animoto
     
       # When included, includes the InstanceMethods module and extends the
       # ClassMethods module.
+      # @return [void]
       def self.included base
         base.class_eval {
           include Animoto::Support::ContentType::InstanceMethods

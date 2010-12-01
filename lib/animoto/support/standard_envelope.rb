@@ -4,6 +4,9 @@ module Animoto
     
       # When included into a class, also extends ClassMethods, inludes InstanceMethods, and
       # includes Support::ContentType
+      #
+      # @param [Module] base the module this is being included into
+      # @return [void]
       def self.included base
         base.class_eval {
           include Animoto::Support::StandardEnvelope::InstanceMethods
@@ -12,6 +15,12 @@ module Animoto
         }
       end
       
+      # Scans the structure of a standard envelope for the 'payload key' and tries to find
+      # the matching class for that key. Returns nil if the class isn't found (instead of,
+      # say, raising a NameError).
+      #
+      # @param [Hash{String=>Object}] envelope a 'standard envelope' hash
+      # @return [Class, nil] the class, or nil if either the payload key or the class couldn't be found
       def self.find_class_for envelope
         if payload_key = ((envelope['response'] || {})['payload'] || {}).keys.first
           klass_name = payload_key.camelize
@@ -27,7 +36,7 @@ module Animoto
     
       module InstanceMethods
         # Calls the class-level unpack_standard_envelope method.
-        # @return [Hash<Symbol,Object>]
+        # @return [Hash{Symbol=>Object}]
         # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
         def unpack_standard_envelope body
           self.class.unpack_standard_envelope body
@@ -43,18 +52,14 @@ module Animoto
       end
     
       module ClassMethods
-        # @overload payload_key(key)
-        #   Sets the payload key for this class. When building an instance of this class from
-        #   a response body, the payload key determines which object in the response payload
-        #   holds the attributes for the instance.
+        
+        # Get or set the payload key for this class. When building an instance of this
+        # class from a response body, the payload key determines which object in the
+        # response payload holds the attributes for the instance.
         #
-        #   @param [String] key the key to set
-        #   @return [String] the key
-        #   
-        # @overload payload_key()
-        #   Returns the payload key for this class.
-        #
-        #   @return [String] the key
+        # @param [String, nil] key the key to set
+        # @return [String] the payload key (the old key if no argument was given), or
+        #   the inferred payload key if not set
         def payload_key key = nil
           @payload_key = key if key
           @payload_key || infer_content_type
@@ -64,16 +69,16 @@ module Animoto
 
         # Extracts the base payload element from the envelope.
         #
-        # @param [Hash<String,String>] body the response body
-        # @return [Hash<String,String>] the base payload at $.response.payload
+        # @param [Hash{String=>Object}] body the response body
+        # @return [Hash{String=>Object}] the base payload at $.response.payload
         def unpack_base_payload body
           (body['response'] || {})['payload'] || {}
         end
         
         # Extracts the base status element from the envelope.
         #
-        # @param [Hash<String,String>] body the response body
-        # @return [Hash<String,String>] the status element at $.response.status
+        # @param [Hash{String=>Object}] body the response body
+        # @return [Hash{String=>Object}] the status element at $.response.status
         def unpack_status body
           (body['response'] || {})['status'] || {}
         end
@@ -81,16 +86,16 @@ module Animoto
         # Returns the payload, which is the part of the response classes will find the most
         # interesting.
         #
-        # @param [Hash<String,String>] body the response body
-        # @return [Hash<String,String>] the payload at $.response.payload[${payload_key}]
+        # @param [Hash{String=>Object}] body the response body
+        # @return [Hash{String=>Object}] the payload at $.response.payload[payload_key]
         def unpack_payload body
           unpack_base_payload(body)[payload_key] || {}
         end
         
         # Returns the links element of the payload, or an empty hash if it doesn't exist.
         # 
-        # @param [Hash<String,String>] body the response body
-        # @return [Hash<String,String>] the links at $.response.payload[${payload_key}].links
+        # @param [Hash{String=>Object}] body the response body
+        # @return [Hash{String=>Object}] the links at $.response.payload[payload_key].links
         def unpack_links body
           unpack_payload(body)['links'] || {}
         end
@@ -98,8 +103,8 @@ module Animoto
         # Extracts common elements from the 'standard envelope' and returns them in a
         # easier-to-work-with hash.
         #
-        # @param [Hash<String,Object>] body the body, structured in the 'standard envelope'
-        # @return [Hash<Symbol,Object>] the nicer hash
+        # @param [Hash{String=>Object}] body the body, structured in the 'standard envelope'
+        # @return [Hash{Symbol=>Object}] the nicer hash
         def unpack_standard_envelope body
           {
             :url    => unpack_links(body)['self'],

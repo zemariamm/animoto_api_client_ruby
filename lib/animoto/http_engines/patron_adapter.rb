@@ -16,7 +16,7 @@ module Animoto
       
       # Builds the Session object.
       #
-      # @param [Hash<Symbol,Object>] options options for the Session
+      # @param [Hash{Symbol=>Object}] options options for the Session
       # @return [Patron::Session] the Session object
       def build_session options
         session = ::Patron::Session.new

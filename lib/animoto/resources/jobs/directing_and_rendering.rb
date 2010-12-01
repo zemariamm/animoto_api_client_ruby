@@ -5,6 +5,8 @@ module Animoto
     
         endpoint '/jobs/directing_and_rendering'
 
+        # @return [Hash{Symbol=>Object}]
+        # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
         def self.unpack_standard_envelope body = {}
           links = unpack_links(body)
           super.merge({
@@ -13,9 +15,27 @@ module Animoto
           })
         end
 
+        # The URL for the storyboard created for this job. This storyboard can be
+        # used into future rendering jobs to produce different formats, resolutions,
+        # etc.
+        # @return [String]
         attr_reader :storyboard_url
+        
+        # A Storyboard object for this job.
+        # @return [Resources::Storyboard]
         attr_reader :storyboard
+        
+        # The URL for the video created. Note that this is for the video *resource* and not
+        # the URL to the actual video *file* (though requesting the resource will give you
+        # the URL to the file).
+        # @return [String]
         attr_reader :video_url
+        
+        # A Video object for this job.
+        #
+        # @note this object may not have all the most recent attributes, namely the download_url
+        #   attribute. Use {Client#reload!} to update the object.
+        # @return [Resources::Video]
         attr_reader :video
 
         # @return [Jobs::DirectingAndRendering]

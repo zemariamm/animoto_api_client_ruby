@@ -2,11 +2,14 @@ module Animoto
   module Resources
     class Storyboard < Animoto::Resources::Base
       
+      # @private
+      # @return [Hash{String=>Object}]
+      # @see Animoto::Support::Support::ClassMethods#unpack_standard_envelope
       def self.unpack_metadata body = {}
         unpack_payload(body)['metadata'] || {}
       end
       
-      # @return [Hash<Symbol,Object>]
+      # @return [Hash{Symbol=>Object}]
       # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
       def self.unpack_standard_envelope body = {}
         metadata = unpack_metadata(body)
@@ -17,8 +20,16 @@ module Animoto
         })
       end
     
+      # The duration (in seconds) that the video, once rendered, will be.
+      # @return [Float]
       attr_reader :duration
+      
+      # The number of visuals (title cards, images, etc.) in this storyboard.
+      # @return [Integer]
       attr_reader :visuals_count
+      
+      # If available, the URL to the low-resolution 'preview' video.
+      # @return [String]
       attr_reader :preview_url
       
       # Sets the attributes for a new storyboard.

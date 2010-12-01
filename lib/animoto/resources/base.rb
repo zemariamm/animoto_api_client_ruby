@@ -1,7 +1,7 @@
 module Animoto
   module Resources
 
-    # @abstract Set {#endpoint} and maybe override {Support::StandardEnvelope#unpack_standard_envelope} to subclass.
+    # @abstract Set {#endpoint} and maybe override {Support::StandardEnvelope::ClassMethods#unpack_standard_envelope} to subclass.
     class Base
       include Support::StandardEnvelope
     
@@ -34,7 +34,7 @@ module Animoto
       # raise an error.
       #
       # @private
-      # @param [Hash<String,Object>] body the deserialized response body
+      # @param [Hash{String=>Object}] body the deserialized response body
       # @return [Resources::Base] an instance of this class
       def self.load body
         new unpack_standard_envelope(body)
@@ -52,7 +52,7 @@ module Animoto
         #   storyboard2 = client.find! Animoto::Resources::Storyboard, "https://api.animoto.com/storyboards/1"
         #   storyboard1.equal?(storyboard2) # => true
         #
-        # @param [Hash<String,Object>] attributes a hash of attributes for this resource
+        # @param [Hash{String=>Object}] attributes a hash of attributes for this resource
         # @return [Resources::Base] either a new Resource instance, or an existing one with updated
         #   attributes
         alias_method :original_new, :new
@@ -79,7 +79,7 @@ module Animoto
 
         # Returns (or vivifies) the identity map for this class.
         #
-        # @return [Hash<String,Resources::Base>] the identity map
+        # @return [Hash{String=>Resources::Base}] the identity map
         def instances
           @instances ||= {}
         end
@@ -89,7 +89,7 @@ module Animoto
 
       # Creates a new resource.
       #
-      # @param [Hash<String,Object>] attributes hash of attributes for this resource
+      # @param [Hash{String=>Object}] attributes hash of attributes for this resource
       # @see #instantiate
       # @return [Resources::Base] the resource
       def initialize attributes = {}
@@ -99,7 +99,7 @@ module Animoto
       # Update this instance with new attributes from the response body.
       #
       # @private
-      # @param [Hash<String,Object>] body deserialized from a response body
+      # @param [Hash{String=>Object}] body deserialized from a response body
       # @return [self] this instance, updated
       def load body = {}
         instantiate unpack_standard_envelope(body)
@@ -110,7 +110,7 @@ module Animoto
       # of #initialize.
       #
       # @private
-      # @param [Hash<Symbol,Object>] attributes hash of attributes for this resource
+      # @param [Hash{Symbol=>Object}] attributes hash of attributes for this resource
       # @return [self] this instance
       def instantiate attributes = {}
         @errors = (attributes[:errors] || []).collect { |e| wrap_error e  }      
@@ -123,7 +123,7 @@ module Animoto
     
       # Turns an error from a response body into a Ruby object.
       #
-      # @param [Hash<String,Object>] error the error "object" from a response body
+      # @param [Hash{String=>Object}] error the error "object" from a response body
       # @return [Animoto::Error] a Ruby error object
       def wrap_error error
         Animoto::Error.new error['message']

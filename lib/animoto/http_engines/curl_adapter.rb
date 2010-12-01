@@ -19,7 +19,7 @@ module Animoto
       # @param [Symbol] method the HTTP method
       # @param [String] url the URL to request
       # @param [String,nil] body the request body
-      # @param [Hash<String,String>] headers hash of HTTP request headers
+      # @param [Hash{String=>String}] headers hash of HTTP request headers
       # @return [Curl::Easy] the Easy instance
       def build_curl method, url, body, headers, options
         ::Curl::Easy.new(url) do |c|
@@ -36,6 +36,7 @@ module Animoto
       # @param [Curl::Easy] curl the Easy object with the request parameters
       # @param [Symbol] method the HTTP method to use
       # @param [String] body the HTTP request body
+      # @return [void]
       def perform curl, method, body
         case method
         when :get

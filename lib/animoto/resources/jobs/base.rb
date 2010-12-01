@@ -5,7 +5,7 @@ module Animoto
       # @abstract
       class Base < Animoto::Resources::Base
         
-        # @return [Hash<Symbol,Object>]
+        # @return [Hash{Symbol=>Object}]
         def self.unpack_standard_envelope body
           super.merge(:state => unpack_payload(body)['state'])
         end

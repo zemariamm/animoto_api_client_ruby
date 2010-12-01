@@ -119,7 +119,7 @@ module Animoto
 
       # Returns a representation of this manifest as a Hash.
       #
-      # @return [Hash<String,String>] the manifest as a Hash
+      # @return [Hash{String=>Object}] the manifest as a Hash
       # @raise [ArgumentError] if a callback URL is specified but not the format
       def to_hash options = {}
         hash = { 'directing_job' => { 'directing_manifest' => {} } }

@@ -35,14 +35,14 @@ This document does not cover the details of the Animoto API itself. For such inf
 
 You can install the Animoto API Ruby Client either through [RubyGems](http://rubygems.org):
 
-    gem install animoto -v 0.1.0.alpha0 --pre
+    gem install animoto -v 1.0.0.rc1 --pre
 
 Or by cloning [the repository](http://github.com/animoto/animoto_api_client_ruby) on [GitHub](http://github.com/) and building it from source:
 
     git clone git://github.com/animoto/animoto_api_client_ruby.git
     cd animoto_api_client_ruby
     gem build animoto.gemspec
-    gem install animoto-0.1.0.alpha0.gem
+    gem install animoto-1.0.0.rc1.gem
 
 ### Prerequisites
 
@@ -102,7 +102,6 @@ client and using HTTP callbacks for status updates.
     # and format.
     manifest = Manifests::DirectingAndRendering.new(
       :title => "Amazing Title!", 
-      :producer => "Fishy Joe", 
       :resolution => "720p", 
       :framerate => 24, 
       :format => 'h264'
@@ -167,7 +166,12 @@ status.
     
       # Now it's time to render the storyboard into a video.  First we create
       # a rendering manifest.
-    	manifest = Manifests::Rendering.new(storyboard, :resolution => "720p", :framerate => 24, :format => 'h264')
+    	manifest = Manifests::Rendering.new(
+    	  storyboard,
+    	  :resolution => "720p",
+    	  :framerate => 24,
+    	  :format => 'h264'
+    	)
     	
     	# Send the manifest to the API.
     	rendering_job = client.render!(manifest)

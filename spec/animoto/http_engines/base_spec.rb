@@ -20,7 +20,7 @@ describe Animoto::HTTPEngines::Base do
     end
     
     it "should raise an implementation error" do
-      lambda { @engine.request(:get, "http://www.example.com/thing") }.should raise_error(NotImplementedError)
+      lambda { @engine.request(:get, "http://www.example.com/thing") }.should raise_error(Animoto::AbstractMethodError)
     end
   end
   

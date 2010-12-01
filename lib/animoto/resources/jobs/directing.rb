@@ -5,13 +5,18 @@ module Animoto
     
         endpoint '/jobs/directing'
 
-        # @return [Hash<Symbol,Object>]
+        # @return [Hash{Symbol=>Object}]
         # @see Animoto::Support::StandardEnvelope::ClassMethods#unpack_standard_envelope
         def self.unpack_standard_envelope body
           super.merge(:storyboard_url => unpack_links(body)['storyboard'])
         end
     
+        # The Storyboard created by this job.
+        # @return [Resources::Storyboard]
         attr_reader :storyboard
+        
+        # The URL for this storyboard resource created by this job.
+        # @return [String]
         attr_reader :storyboard_url
 
         # @return [Jobs::Directing]

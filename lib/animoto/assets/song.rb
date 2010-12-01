@@ -13,7 +13,7 @@ module Animoto
     
       # Returns a representation of this Song as a Hash.
       #
-      # @return [Hash<String,Object>] this asset as a Hash
+      # @return [Hash{String=>Object}] this asset as a Hash
       # @see Animoto::Assets::Base#to_hash
       def to_hash
         hash = super

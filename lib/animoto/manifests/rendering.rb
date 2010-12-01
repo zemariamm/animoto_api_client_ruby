@@ -8,7 +8,7 @@ module Animoto
       attr_accessor :resolution
       
       # The framerate of the rendered video. Valid values are 12, 15, 24 or 30.
-      # @return [Fixnum]
+      # @return [Integer]
       attr_accessor :framerate
       
       # The format of the rendered video. Valid values are 'h264', 'h264-iphone', 'flv' or 'iso'.
@@ -30,7 +30,7 @@ module Animoto
       # Creates a new rendering manifest.
       #
       # @param [Resources::Storyboard] storyboard the storyboard for this rendering
-      # @param [Hash<Symbol,Object>] options
+      # @param [Hash{Symbol=>Object}] options
       # @option options [String] :resolution the vertical resolution of the rendered video
       # @option options [Integer] :framerate the framerate of the rendered video
       # @option options [String] :format the format of the rendered video
@@ -49,7 +49,7 @@ module Animoto
     
       # Returns a representation of this manifest as a Hash.
       #
-      # @return [Hash<String,String>] this manifest as a Hash
+      # @return [Hash{String=>Object}] this manifest as a Hash
       # @raise [ArgumentError] if a callback URL was specified but not the format
       def to_hash
         hash  = { 'rendering_job' => { 'rendering_manifest' => { 'rendering_parameters' => {} } } }

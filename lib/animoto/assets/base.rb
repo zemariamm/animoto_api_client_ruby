@@ -19,7 +19,7 @@ module Animoto
       # Returns a representation of this asset as a Hash. Used mainly for generating
       # manifests.
       #
-      # @return [Hash<String,Object>] this asset as a Hash
+      # @return [Hash{String=>Object}] this asset as a Hash
       def to_hash
         { 'source_url' => @source }
       end

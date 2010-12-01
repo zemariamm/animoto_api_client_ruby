@@ -6,7 +6,7 @@ module Animoto
       
       @format = 'json'
       
-      # @return [Hash<String,Object>]
+      # @return [Hash{String=>Object}]
       def parse string
         ::JSON.parse string
       end

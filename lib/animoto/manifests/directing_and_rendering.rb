@@ -23,7 +23,7 @@ module Animoto
 
       # Creates a new directing-and-rendering manifest.
       #
-      # @param [Hash<Symbol,Object>] options
+      # @param [Hash{Symbol=>Object}] options
       # @option options [String] :title the title of this project
       # @option options [String] :pacing ('default') the pacing for this project
       # @option options [String] :resolution the vertical resolution of the rendered video
@@ -56,7 +56,7 @@ module Animoto
 
       # Returns a representation of this manifest as a Hash.
       #
-      # @return [Hash<String,String>] the manifest as a Hash
+      # @return [Hash{String=>Object}] the manifest as a Hash
       # @raise [ArgumentError] if a callback URL is specified but not the format
       # @see Animoto::Manifests::Directing#to_hash
       # @see Animoto::Manifests::Rendering#to_hash
