@@ -1,9 +1,10 @@
-require 'rubygems'
-require 'spec'
+Bundler.setup(:default, :test)
+
+require 'rspec'
 require 'webmock/rspec'
 require 'mocha'
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.mock_with :mocha
   config.include WebMock::API
 end
